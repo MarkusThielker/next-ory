@@ -1,0 +1,114 @@
+services:
+
+  ory-kratos-migrate:
+    container_name: ory-kratos-migrate
+    image: oryd/kratos:v1.1.0
+    restart: on-failure
+    volumes:
+      - ./ory/kratos:/etc/config/kratos
+      - ory-kratos-data:/home/ory
+      - ory-kratos-data:/var/lib/sqlite
+    command: -c /etc/config/kratos/kratos.yaml migrate sql -e --yes
+    depends_on:
+      ory-postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+
+  ory-kratos:
+    container_name: ory-kratos
+    image: oryd/kratos:v1.1.0
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:4433:4433 # public
+      - 127.0.0.1:4434:4434 # admin
+    volumes:
+      - ./ory/kratos:/etc/config/kratos
+      - ory-kratos-data:/home/ory
+      - ory-kratos-data:/var/lib/sqlite
+    command: serve -c /etc/config/kratos/kratos.yaml --dev --watch-courier
+    depends_on:
+      ory-kratos-migrate:
+        condition: service_completed_successfully
+    networks:
+      - internal
+
+
+  ory-hydra-migrate:
+    container_name: ory-hydra-migrate
+    image: oryd/hydra:v2.2.0
+    restart: on-failure
+    volumes:
+      - ./ory/hydra:/etc/config/hydra
+      - ory-hydra-data:/home/ory
+      - ory-hydra-data:/var/lib/sqlite
+    command: migrate -c /etc/config/hydra/hydra.yaml sql -e --yes
+    depends_on:
+      ory-postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+
+  ory-hydra:
+    container_name: ory-hydra
+    image: oryd/hydra:v2.2.0
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:4444:4444 # public
+      - 127.0.0.1:4445:4445 # admin
+      - 127.0.0.1:5555:5555 # Port for hydra token user
+    volumes:
+      - ./ory/hydra:/etc/config/hydra
+      - ory-hydra-data:/home/ory
+      - ory-hydra-data:/var/lib/sqlite
+    command: serve -c /etc/config/hydra/hydra.yaml all --dev
+    depends_on:
+      ory-hydra-migrate:
+        condition: service_completed_successfully
+    networks:
+      - internal
+
+
+  ory-mailslurper:
+    container_name: ory-mailslurper
+    image: oryd/mailslurper:latest-smtps
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:4436:4436
+      - 127.0.0.1:4437:4437
+    networks:
+      - internal
+
+
+  ory-postgres:
+    container_name: ory-postgres
+    image: postgres:15.2
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 127.0.0.1:5432:5432
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ory-postgres-data:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d/
+    networks:
+      - internal
+
+
+networks:
+  internal:
+
+
+volumes:
+  ory-kratos-data:
+  ory-hydra-data:
+  ory-postgres-data:

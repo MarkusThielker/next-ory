@@ -1,0 +1,88 @@
+#
+# Documentation: https://www.ory.sh/docs/hydra/reference/configuration
+# Configuration UI: https://www.ory.sh/docs/hydra/reference/configuration-editor
+#
+
+#
+# Configure the Hydra logging
+#
+log:
+  level: info
+  format: text
+  leak_sensitive_values: true
+
+
+#
+# Configure the datasource. Alternative for development purposes is 'memory' (not persistent!)
+#
+dsn: postgres://postgres:postgres@ory-postgres:5432/hydra?sslmode=disable&max_conns=20&max_idle_conns=4
+
+
+#
+# Configure the base URLs for the public and admin API.
+# The public URL is used in emails for verification links.
+#
+serve:
+
+  public:
+    cors:
+      enabled: true
+      debug: true
+      allowed_origins:
+        - http://localhost:3000
+
+  admin:
+    cors:
+      enabled: true
+      debug: true
+      allowed_origins:
+        - http://localhost:3000
+
+  cookies:
+    domain: http://localhost
+    same_site_mode: Lax
+    secure: false
+    paths:
+      session: /
+    names:
+      consent_csrf: ory_hydra_consent_csrf
+      session: ory_hydra_session
+      login_csrf: ory_hydra_login_csrf
+
+
+urls:
+
+  consent: http://localhost:3000/flow/consent
+  login: http://localhost:3000/flow/login
+  logout: http://localhost:3000/flow/logout
+  post_logout_redirect: http://localhost:3000
+
+  identity_provider:
+    url: http://kratos:4434
+
+  self:
+    public: http://localhost:4444
+    admin: http://localhost:4445
+    issuer: http://localhost:4444
+
+
+#
+# Configure secrets and key rotation.
+# Documentation: https://www.ory.sh/docs/hydra/self-hosted/secrets-key-rotation
+#
+secrets:
+  system:
+    - youReallyNeedToChangeThis
+
+
+#
+# Configure the OAuth2 clients.
+# Documentation: https://www.ory.sh/docs/hydra/next/clients
+#
+oidc:
+  subject_identifiers:
+    supported_types:
+      - pairwise
+      - public
+    pairwise:
+      salt: youReallyNeedToChangeThis
