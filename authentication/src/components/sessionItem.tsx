@@ -19,7 +19,7 @@ export default function SessionItem({ session, showInvalidate, invalidateSession
         return;
     }
 
-    const [device, setDevice] = useState<SessionDevice>(session.devices[0]);
+    const [device] = useState<SessionDevice>(session.devices[0]);
 
     const parser = new UAParser(device.user_agent);
     const result = parser.getResult();
