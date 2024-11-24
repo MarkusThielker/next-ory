@@ -7,6 +7,9 @@ const withSerwist = withSerwistInit({
 
 export default withSerwist({
     output: 'standalone',
+    experimental: {
+        missingSuspenseWithCSRBailout: false,
+    },
     env: {
         appVersion: process.env.npm_package_version,
     },
