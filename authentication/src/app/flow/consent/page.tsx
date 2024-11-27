@@ -8,7 +8,9 @@ import ConsentForm from '@/components/consentForm';
 import { redirect } from 'next/navigation';
 import { toast } from 'sonner';
 
-export default async function Consent({ searchParams }: { searchParams: { consent_challenge: string } }) {
+export default async function Consent(props: { searchParams: Promise<{ consent_challenge: string }> }) {
+
+    const searchParams = await props.searchParams;
 
     const consentChallenge = searchParams.consent_challenge ?? undefined;
     let consentRequest: OAuth2ConsentRequest | undefined = undefined;
