@@ -32,6 +32,15 @@ npm install
 npm run dev
 ```
 
+Inside another terminal session we can start the dashboard UI using npm:
+
+```bash
+cd dashboard
+cp .env.example .env
+npm install
+npm run dev
+```
+
 ## Deployment
 
 *soon.*

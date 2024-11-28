@@ -27,6 +27,7 @@ serve:
       enabled: true
       allowed_origins:
         - http://localhost:3000
+        - http://localhost:4000
   admin:
     base_url: http://localhost:4434
 
@@ -47,6 +48,7 @@ selfservice:
   default_browser_return_url: http://localhost:3000
   allowed_return_urls:
     - http://localhost:3000
+    - http://localhost:4000
 
   methods:
     password:
