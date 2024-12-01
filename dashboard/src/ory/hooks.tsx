@@ -3,7 +3,7 @@
 import { AxiosError } from 'axios';
 import { DependencyList, useEffect, useState } from 'react';
 
-import { kratos } from './sdk/kratos';
+import { kratos } from './sdk/client';
 
 // Returns a function which will log the user out
 export function LogoutLink(deps?: DependencyList) {
