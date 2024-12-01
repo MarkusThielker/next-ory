@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/sonner';
 import React from 'react';
 import { ThemeProvider } from 'next-themes';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/app-sidebar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -53,8 +55,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 enableSystem
                 disableTransitionOnChange
             >
-                {children}
-                <Toaster/>
+                <SidebarProvider>
+                    <AppSidebar/>
+                    <SidebarTrigger className="m-2"/>
+                    <main className="w-full min-h-screen">
+                        {children}
+                        <Toaster/>
+                    </main>
+                </SidebarProvider>
             </ThemeProvider>
         </main>
         </body>
