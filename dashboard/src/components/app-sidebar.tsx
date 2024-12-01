@@ -45,7 +45,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ];
 
     return (
-        <Sidebar variant="floating" {...props} collapsible="icon">
+        <Sidebar variant="inset" collapsible="icon" {...props}>
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Application</SidebarGroupLabel>
