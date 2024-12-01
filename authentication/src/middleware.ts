@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getFrontendApi } from '@/ory/sdk/hydra';
+import { getFrontendApi } from 'ory/sdk/server';
 import { cookies } from 'next/headers';
 
 export async function middleware(request: NextRequest) {
