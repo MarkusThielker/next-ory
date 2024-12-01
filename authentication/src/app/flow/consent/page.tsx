@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import getHydra from '@/ory/sdk/hydra';
 import { OAuth2ConsentRequest, OAuth2RedirectTo } from '@ory/client';
 import ConsentForm from '@/components/consentForm';
 import { redirect } from 'next/navigation';
 import { toast } from 'sonner';
+import { getOAuth2Api } from '@/ory/sdk/server';
 
 export default async function Consent(props: { searchParams: Promise<{ consent_challenge: string }> }) {
 
@@ -18,7 +18,7 @@ export default async function Consent(props: { searchParams: Promise<{ consent_c
     const onAccept = async (challenge: string, scopes: string[], remember: boolean) => {
         'use server';
 
-        const hydra = await getHydra();
+        const hydra = await getOAuth2Api();
         const response = await hydra
             .acceptOAuth2ConsentRequest({
                 consentChallenge: challenge,
@@ -43,7 +43,7 @@ export default async function Consent(props: { searchParams: Promise<{ consent_c
     const onReject = async (challenge: string) => {
         'use server';
 
-        const hydra = await getHydra();
+        const hydra = await getOAuth2Api();
         const response: OAuth2RedirectTo | void = await hydra
             .rejectOAuth2ConsentRequest({
                 consentChallenge: challenge,
@@ -64,7 +64,7 @@ export default async function Consent(props: { searchParams: Promise<{ consent_c
         return;
     }
 
-    const hydra = await getHydra();
+    const hydra = await getOAuth2Api();
     await hydra
         .getOAuth2ConsentRequest({ consentChallenge })
         .then(({ data }) => {

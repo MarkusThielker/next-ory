@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Flow, HandleError, LogoutLink } from '@/ory';
 import Link from 'next/link';
 import { LoginFlow, UpdateLoginFlowBody } from '@ory/client';
-import { kratos } from '@/ory/sdk/kratos';
+import { kratos } from '../../../ory/sdk/client';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';

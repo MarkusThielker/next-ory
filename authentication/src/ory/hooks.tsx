@@ -3,7 +3,7 @@
 import { AxiosError } from 'axios';
 import React, { DependencyList, useEffect, useState } from 'react';
 
-import { kratos } from './sdk/kratos';
+import { kratos } from './sdk/client';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 export const HandleError = (

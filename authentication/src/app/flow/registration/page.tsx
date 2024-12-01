@@ -6,7 +6,7 @@ import { Flow, HandleError } from '@/ory';
 import Link from 'next/link';
 import { RegistrationFlow, UpdateRegistrationFlowBody } from '@ory/client';
 import { AxiosError } from 'axios';
-import { kratos } from '@/ory/sdk/kratos';
+import { kratos } from '../../../ory/sdk/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';

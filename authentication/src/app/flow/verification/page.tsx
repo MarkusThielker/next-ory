@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Flow, HandleError } from '@/ory';
 import { UpdateVerificationFlowBody, VerificationFlow } from '@ory/client';
 import { AxiosError } from 'axios';
-import { kratos } from '@/ory/sdk/kratos';
+import { kratos } from '../../../ory/sdk/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
