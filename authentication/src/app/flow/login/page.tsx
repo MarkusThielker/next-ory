@@ -2,10 +2,9 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Flow, HandleError, LogoutLink } from '@/ory';
+import { Flow, HandleError, kratos, LogoutLink } from '@/ory';
 import Link from 'next/link';
 import { LoginFlow, UpdateLoginFlowBody } from '@ory/client';
-import { kratos } from '../../../ory/sdk/client';
 import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
