@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getFrontendApi } from 'ory/sdk/server';
 import { cookies } from 'next/headers';
+import { getFrontendApi } from '@/ory/sdk/server';
 
 export async function middleware(request: NextRequest) {
 
@@ -24,6 +24,17 @@ export async function middleware(request: NextRequest) {
         console.log('REDIRECT TO', url);
 
         return NextResponse.redirect(url);
+    }
+
+    if (session && request.nextUrl.pathname.startsWith('/flow')) {
+
+        console.log('SESSION EXISTS');
+
+        const returnTo = request.nextUrl.searchParams.get('return_to') ?? request.nextUrl.host;
+
+        console.log('REDIRECT TO', returnTo);
+
+        return NextResponse.redirect(returnTo);
     }
 
     return NextResponse.next();
