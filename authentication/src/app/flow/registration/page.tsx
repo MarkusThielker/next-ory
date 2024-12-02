@@ -121,7 +121,10 @@ export default function Registration() {
             {
                 flow ?
                     <Button variant="link" asChild disabled={!flow}>
-                        <Link href="/flow/login" className="inline-flex space-x-2" passHref>
+                        <Link
+                            href={{ pathname: '/flow/login', query: { return_to: flow.return_to } }}
+                            className="inline-flex space-x-2"
+                            passHref>
                             Log into your account
                         </Link>
                     </Button>
