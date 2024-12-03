@@ -144,9 +144,11 @@ export default function Login() {
                     <div className="flex flex-col">
                         {
                             flow ?
-                                <Button variant="link" asChild>
-                                    <Link href="/flow/recovery" className="text-orange-600" passHref>
-                                        <span>Forgot your password?</span>
+                                <Button variant="link" asChild><Link
+                                    href={{ pathname: '/flow/recovery', query: { return_to: flow.return_to } }}
+                                    className="text-orange-600"
+                                    passHref>
+                                    Forgot your password?
                                     </Link>
                                 </Button>
                                 :
@@ -155,8 +157,11 @@ export default function Login() {
                         {
                             flow ?
                                 <Button variant="link" asChild disabled={!flow}>
-                                    <Link href="/flow/registration" className="inline-flex space-x-2" passHref>
-                                        <span>Create an account</span>
+                                    <Link
+                                        href={{ pathname: '/flow/registration', query: { return_to: flow.return_to } }}
+                                        className="inline-flex space-x-2"
+                                        passHref>
+                                        Create an account
                                     </Link>
                                 </Button>
                                 :
