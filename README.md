@@ -23,22 +23,22 @@ docker compose -f docker/ory-dev/docker-compose.yaml up -d
 sh docker/ory-dev/hydra-test-consent.sh
 ```
 
-Then start the authentication UI using npm:
+Then start the authentication UI:
 
 ```bash
 cd authentication
 cp .env.example .env
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
-Inside another terminal session we can start the dashboard UI using npm:
+Inside another terminal session we can start the dashboard UI:
 
 ```bash
 cd dashboard
 cp .env.example .env
-npm install
-npm run dev
+bun install
+bun run dev
 ```
 
 ## Deployment
