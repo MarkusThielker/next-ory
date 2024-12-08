@@ -50,11 +50,19 @@ bun run dev
 The authentication UI is already implemented and working. It supports all self-service flows for Ory Kratos and Ory
 Hydra. It is implemented in a way, that customizing style and page layout is very easy.
 
-![A browser window showing the login page of the authentication UI in dark mode](./documentation/.img/login-dark.png)
+![A browser window showing the login page of the authentication UI in dark mode](./documentation/.img/a-login-dark.png)
 
-![A browser window showing the registration page of the authentication UI in dark mode](./documentation/.img/registration-dark.png)
+![A browser window showing the registration page of the authentication UI in light mode](./documentation/.img/a-registration-light.png)
 
-## Admin UI
+![A browser window showing the profile settings page of the authentication UI in dark mode](./documentation/.img/a-settings-dark.png)
 
-*soon.*
+## Admin Dashboard
+
+Right now I am working on the admin dashboard for Ory Kratos. It will provide you with an overview of your instance and
+let you manage users, OAuth2 applications and more. It is ***work in progress*** and should not be used in anything
+important as it is not yet protected by Keto permissions but only by a valid Kratos session!
+
+![A browser window showing the home page of the dashboard UI in dark mode](./documentation/.img/d-dashboard-dark.png)
+
+![A browser window showing the users page of the dashboard UI in dark mode](./documentation/.img/d-users-dark.png)
 
