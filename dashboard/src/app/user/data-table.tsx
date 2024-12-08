@@ -5,12 +5,18 @@ import { Identity } from '@ory/client';
 import { DataTable } from '@/components/ui/data-table';
 import { CircleCheck, CircleX } from 'lucide-react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { useState } from 'react';
+import { FetchIdentityPageProps } from '@/app/user/page';
 
 interface IdentityDataTableProps {
     data: Identity[];
+    pageSize: number;
+    pageToken: string | undefined;
+    query: string;
+    fetchIdentityPage: (props: FetchIdentityPageProps) => Promise<{ data: Identity[], tokens: Map<string, string> }>;
 }
 
-export function IdentityDataTable({ data }: IdentityDataTableProps) {
+export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdentityPage }: IdentityDataTableProps) {
 
     const columns: ColumnDef<Identity>[] = [
         {
@@ -80,5 +86,23 @@ export function IdentityDataTable({ data }: IdentityDataTableProps) {
         },
     ];
 
-    return <DataTable columns={columns} data={data}/>;
+    const [items, setItems] = useState<Identity[]>(data);
+    const [nextToken, setNextToken] = useState<string | undefined>(pageToken);
+
+    const fetchMore = async () => {
+
+        if (!nextToken) return;
+
+        const response = await fetchIdentityPage({
+            pageSize: pageSize,
+            pageToken: nextToken,
+            query: query,
+        });
+
+        setItems([...items, ...response.data]);
+        setNextToken(response.tokens.get('next') ?? undefined);
+    };
+
+    // TODO: fetch more when scrolling to the end of list
+    return <DataTable columns={columns} data={items}/>;
 }
