@@ -79,8 +79,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                         {children}
                     </div>
                 </SidebarInset>
+                <Toaster/>
             </SidebarProvider>
-            <Toaster/>
         </ThemeProvider>
         </body>
         </html>
