@@ -35,7 +35,7 @@ export const metadata = {
 };
 
 export const viewport: Viewport = {
-    themeColor: '#0B0908',
+    themeColor: '#18181b',
     width: 'device-width',
 };
 
@@ -56,10 +56,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             enableSystem
             disableTransitionOnChange
         >
-            <SidebarProvider>
+            <SidebarProvider className="max-h-screen min-h-screen">
                 <AppSidebar className="mx-1"/>
-                <SidebarInset className="p-2">
-                    <header className="flex h-16 shrink-0 items-center gap-2 px-4">
+                <SidebarInset className="overflow-hidden p-6 space-y-6">
+                    <header className="flex h-4 items-center gap-2">
                         <SidebarTrigger className="-ml-1 p-1"/>
                         <Separator orientation="vertical" className="mr-2 h-4"/>
                         {
@@ -75,12 +75,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                             </BreadcrumbList>
                         </Breadcrumb>
                     </header>
-                    <div className="flex flex-col p-4 pt-0">
+                    <div className="flex-1 overflow-scroll">
                         {children}
-                        <Toaster/>
                     </div>
                 </SidebarInset>
             </SidebarProvider>
+            <Toaster/>
         </ThemeProvider>
         </body>
         </html>
