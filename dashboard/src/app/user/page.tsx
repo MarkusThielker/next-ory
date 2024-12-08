@@ -56,10 +56,10 @@ export default async function UserPage(
     const params = await searchParams;
     const query = params.query ? params.query as string : '';
 
-    let pageSize = 200;
+    let pageSize = 250;
     let pageToken: string = '00000000-0000-0000-0000-000000000000';
 
-    const initialFetch = await fetchIdentityPage({ pageSize, pageToken, query: '' });
+    const initialFetch = await fetchIdentityPage({ pageSize, pageToken, query: query });
 
     return (
         <div className="space-y-4">

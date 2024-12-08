@@ -5,8 +5,9 @@ import { Identity } from '@ory/client';
 import { DataTable } from '@/components/ui/data-table';
 import { CircleCheck, CircleX } from 'lucide-react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FetchIdentityPageProps } from '@/app/user/page';
+import { Spinner } from '@/components/ui/spinner';
 
 interface IdentityDataTableProps {
     data: Identity[];
@@ -89,8 +90,12 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
     const [items, setItems] = useState<Identity[]>(data);
     const [nextToken, setNextToken] = useState<string | undefined>(pageToken);
 
-    const fetchMore = async () => {
+    useEffect(() => {
+        setItems(data);
+        setNextToken(pageToken);
+    }, [data, pageSize, pageToken, query]);
 
+    const fetchMore = async () => {
         if (!nextToken) return;
 
         const response = await fetchIdentityPage({
@@ -103,6 +108,39 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
         setNextToken(response.tokens.get('next') ?? undefined);
     };
 
-    // TODO: fetch more when scrolling to the end of list
-    return <DataTable columns={columns} data={items}/>;
+    const infiniteScrollSensor = useRef(null);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    fetchMore();
+                }
+            },
+            { threshold: 0.5 }, // Adjust threshold as needed
+        );
+
+        if (infiniteScrollSensor.current) {
+            observer.observe(infiniteScrollSensor.current);
+        }
+
+        return () => {
+            if (infiniteScrollSensor.current) {
+                observer.unobserve(infiniteScrollSensor.current);
+            }
+        };
+    }, [items]);
+
+    return (
+        <>
+            <DataTable columns={columns} data={items}/>
+            {
+                nextToken && (
+                    <div className="flex w-full justify-center">
+                        <Spinner ref={infiniteScrollSensor} className="h-10"/>
+                    </div>
+                )
+            }
+        </>
+    );
 }
