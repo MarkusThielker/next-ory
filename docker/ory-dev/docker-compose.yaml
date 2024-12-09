@@ -2,7 +2,7 @@ services:
 
   ory-kratos-migrate:
     container_name: ory-kratos-migrate
-    image: oryd/kratos:v1.1.0
+    image: oryd/kratos:v1.3.1
     restart: on-failure
     volumes:
       - ./ory/kratos:/etc/config/kratos
@@ -18,7 +18,7 @@ services:
 
   ory-kratos:
     container_name: ory-kratos
-    image: oryd/kratos:v1.1.0
+    image: oryd/kratos:v1.3.1
     restart: unless-stopped
     ports:
       - 127.0.0.1:4433:4433 # public
