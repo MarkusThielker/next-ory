@@ -1,0 +1,137 @@
+#
+# Documentation: https://www.ory.sh/docs/kratos/reference/configuration
+# Configuration UI: https://www.ory.sh/docs/kratos/reference/configuration-editor
+#
+
+#
+# Configure the Kratos logging
+#
+log:
+  level: info
+  format: text
+  leak_sensitive_values: true
+
+#
+# Configure the datasource. Alternative for development purposes is 'memory' (not persistent!)
+#
+dsn: postgres://postgres:postgres@ory-postgres:5432/kratos?sslmode=disable&max_conns=20&max_idle_conns=4
+
+#
+# Configure the base URLs for the public and admin API.
+# The public URL is used in emails for verification links.
+#
+serve:
+  public:
+    base_url: http://localhost:4433
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://localhost:3000
+        - http://localhost:4000
+  admin:
+    base_url: http://localhost:4434
+
+#
+# Configure the session cookie.
+#
+cookies:
+  domain: http://localhost
+  path: /
+  same_site: Lax
+
+#
+# Configure the self-service flows.session.
+# Probably most interesting are ui urls, return urls and hooks.session.
+# You can also activate authentication methods.
+#
+selfservice:
+  default_browser_return_url: http://localhost:3000
+  allowed_return_urls:
+    - http://localhost:3000
+    - http://localhost:4000
+
+  methods:
+    password:
+      enabled: true
+    totp:
+      enabled: true
+      config:
+        issuer: ORY Template
+    lookup_secret:
+      enabled: true
+
+  flows:
+    error:
+      ui_url: http://localhost:3000/flow/error
+
+    settings:
+      required_aal: highest_available
+      ui_url: http://localhost:3000
+
+    recovery:
+      enabled: true
+      ui_url: http://localhost:3000/flow/recovery
+
+    verification:
+      enabled: true
+      ui_url: http://localhost:3000/flow/verification
+
+    login:
+      ui_url: http://localhost:3000/flow/login
+      lifespan: 10m
+      after:
+        hooks:
+          - hook: require_verified_address
+
+    registration:
+      lifespan: 10m
+      ui_url: http://localhost:3000/flow/registration
+      # after:
+      #   default_browser_return_url: http://localhost:3000
+      #   password:
+      #     hooks:
+      #       - hook: session # automatically sign-in after registration
+
+# 
+# Configure connection to hydra for oauth2 and oidc.
+# If set, the login and registration flows will handle the Ory OAuth 2.0 & OpenID `login_challenge` query parameter to serve as an OpenID Connect Provider.
+# 
+oauth2_provider:
+  override_return_to: false
+  url: http://ory-hydra:4445
+
+#
+# Configure secrets and key rotation.
+# Documentation: https://www.ory.sh/docs/kratos/guides/secret-key-rotation
+#
+secrets:
+  cookie:
+    - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+  cipher:
+    - 32-LONG-SECRET-NOT-SECURE-AT-ALL
+
+ciphers:
+  algorithm: xchacha20-poly1305
+
+hashers:
+  algorithm: bcrypt
+  bcrypt:
+    cost: 8
+
+#
+# The delivered identity schema shows how to use the schema system.
+# Documentation: https://www.ory.sh/docs/kratos/manage-identities/identity-schema
+#
+identity:
+  default_schema_id: default
+  schemas:
+    - id: default
+      url: file:///etc/config/kratos/identity.schema.json
+
+#
+# Configure the mailing service.
+# Documentation: https://www.ory.sh/docs/kratos/self-hosted/mail-courier-selfhosted
+#
+courier:
+  smtp:
+    connection_uri: smtps://test:test@ory-mailslurper:1025/?skip_ssl_verify=true

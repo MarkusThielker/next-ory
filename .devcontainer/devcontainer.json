@@ -1,0 +1,31 @@
+{
+	"name": "Node.js",
+	"dockerComposeFile": [
+		"docker-compose.yaml"
+	],
+	"service": "dashboard",
+	"workspaceFolder": "/workspaces",
+	"init": true,
+	"shutdownAction": "stopCompose",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-docker"
+			]
+		},
+		"settings": {
+			"terminal.integrated.shell.linux": "/bin/bash"
+		}
+	},
+	"forwardPorts": [
+		4433,
+		4434,
+		4436,
+		4437,
+		4444,
+		4445,
+		5555,
+		5432
+	],
+	"postCreateCommand": "npm install -g bun"
+}
