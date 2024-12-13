@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { Identity } from '@ory/client';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface IdentityTraitFormProps {
     schema: KratosSchema;
@@ -21,6 +22,21 @@ function renderUiNodes(form: UseFormReturn, properties: KratosSchemaProperties, 
     return Object.entries(properties).map(([key, value]) => {
             if (value.type === 'object') {
                 return renderUiNodes(form, value.properties!, key);
+            } else if (value.type === 'boolean') {
+                return (
+                    <FormField
+                        control={form.control}
+                        name={keyPrefix + key}
+                        key={key}
+                        className="space-y-0"
+                        render={({ field }) => (
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                                <Checkbox {...field} checked={field.value}/>
+                                <FormLabel>{value.title}</FormLabel>
+                            </FormItem>
+                        )}
+                    />
+                );
             } else {
                 return (
                     <FormField

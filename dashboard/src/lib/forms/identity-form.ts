@@ -51,6 +51,7 @@ export function generateZodSchema(properties: KratosSchemaProperties) {
                     zodType = zodType.max(value.maxLength);
                 }
                 break;
+            case 'integer':
             case 'number':
                 zodType = z.number();
                 if (value.minimum) {
@@ -59,6 +60,9 @@ export function generateZodSchema(properties: KratosSchemaProperties) {
                 if (value.maximum) {
                     zodType = zodType.max(value.maximum);
                 }
+                break;
+            case 'boolean':
+                zodType = z.boolean();
                 break;
             case 'object':
                 const schemaCopy = structuredClone(schema);
