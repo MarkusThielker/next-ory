@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import { RefObject } from 'react';
 
 export const Spinner = (
-    { className, ref }: { className?: string, ref: RefObject<any> },
+    { className, ref }: { className?: string, ref?: RefObject<any> },
 ) => <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"

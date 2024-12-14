@@ -70,7 +70,7 @@ export default async function UserPage(
                 </p>
             </div>
             <div className="space-y-2">
-                <SearchInput queryParamKey="query" placeholder="Search"/>
+                <SearchInput queryParamKey="query" placeholder="Search for identifiers (Email, Username...)"/>
                 <IdentityDataTable
                     data={initialFetch.data}
                     pageSize={pageSize}
