@@ -6,6 +6,71 @@ import { IdentityTraitForm } from '@/components/forms/IdentityTraitForm';
 import { KratosSchema } from '@/lib/forms/identity-form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { UAParser } from 'ua-parser-js';
+import { RecoveryIdentityAddress, VerifiableIdentityAddress } from '@ory/client';
+import { Badge } from '@/components/ui/badge';
+import { Check, X } from 'lucide-react';
+
+interface MergedAddress {
+    recovery_id?: string;
+    verifiable_id?: string;
+    verified?: boolean;
+    verified_at?: string;
+    value: string;
+    via: string;
+}
+
+function mergeAddresses(
+    recovery: RecoveryIdentityAddress[],
+    verifiable: VerifiableIdentityAddress[],
+): MergedAddress[] {
+
+    const merged = [...recovery, ...verifiable];
+    return merged.reduce((acc: MergedAddress[], curr: any) => {
+
+        const existingValue =
+            acc.find(item => item.value && curr.value && item.value === curr.value);
+
+        if (!existingValue) {
+
+            let newEntry: MergedAddress;
+            if (curr.status) {
+
+                // status property exists only in verifiable addresses
+                // expecting verifiable address
+                newEntry = {
+                    verifiable_id: curr.id,
+                    verified: curr.verified,
+                    verified_at: curr.verified_at,
+                    value: curr.value,
+                    via: curr.via,
+                } as MergedAddress;
+
+            } else {
+
+                // expecting recovery address
+                newEntry = {
+                    recovery_id: curr.id,
+                    value: curr.value,
+                    via: curr.via,
+                } as MergedAddress;
+            }
+
+            acc.push(newEntry);
+
+        } else {
+
+            const additionalValues = {
+                recovery_id: existingValue.recovery_id,
+                verifiable_id: curr.id,
+                verified: curr.verified,
+                verified_at: curr.verified_at,
+            };
+
+            Object.assign(existingValue, additionalValues);
+        }
+        return acc;
+    }, []);
+}
 
 export default async function UserDetailsPage({ params }: { params: Promise<{ id: string }> }) {
 
@@ -46,12 +111,15 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
         .getIdentitySchema({ id: identity.schema_id })
         .then((response) => response.data as KratosSchema);
 
-    const address = identity.verifiable_addresses[0];
+    const addresses = mergeAddresses(
+        identity.recovery_addresses ?? [],
+        identity.verifiable_addresses ?? [],
+    );
 
     return (
         <div className="space-y-4">
             <div>
-                <p className="text-3xl font-bold leading-tight tracking-tight">{address.value}</p>
+                <p className="text-3xl font-bold leading-tight tracking-tight">{addresses[0].value}</p>
                 <p className="text-lg font-light">{identity.id}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -67,8 +135,47 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                 <Card>
                     <CardHeader>
                         <CardTitle>Addresses</CardTitle>
-                        <CardDescription></CardDescription>
+                        <CardDescription>All linked addresses for verification and recovery</CardDescription>
                     </CardHeader>
+                    <CardContent>
+
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Type</TableHead>
+                                    <TableHead>Value</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {
+                                    addresses.map((address) => {
+                                        return (
+                                            <TableRow key={address.value}>
+                                                <TableCell>{address.value}</TableCell>
+                                                <TableCell>{address.via}</TableCell>
+                                                <TableCell>
+                                                    {address.verifiable_id &&
+                                                        <Badge className="m-1 space-x-1">
+                                                            <span>Verifiable</span>
+                                                            {
+                                                                address.verified ?
+                                                                    <Check className="h-3 w-3"/>
+                                                                    :
+                                                                    <X className="h-3 w-3"/>
+                                                            }
+                                                        </Badge>
+                                                    }
+                                                    {address.recovery_id &&
+                                                        <Badge className="m-1">Recovery</Badge>
+                                                    }
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })
+                                }
+                            </TableBody>
+                        </Table>
+                    </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
