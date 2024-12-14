@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { IdentityTraitForm } from '@/components/forms/IdentityTraitForm';
 import { KratosSchema } from '@/lib/forms/identity-form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { UAParser } from 'ua-parser-js';
 
 export default async function UserDetailsPage({ params }: { params: Promise<{ id: string }> }) {
 
@@ -18,6 +19,15 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
         })
         .catch(() => {
             console.log('Identity not found');
+        });
+
+    const sessions = await identityApi.listIdentitySessions({ id: identityId })
+        .then((response) => {
+            console.log('sessions', response.data);
+            return response.data;
+        })
+        .catch(() => {
+            console.log('No sessions found');
         });
 
     if (!identity) {
@@ -93,6 +103,48 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                         <CardTitle>Sessions</CardTitle>
                         <CardDescription>See and manage all sessions of this identity</CardDescription>
                     </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>OS</TableHead>
+                                    <TableHead>Browser</TableHead>
+                                    <TableHead>Active since</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {
+                                    sessions ?
+                                        sessions.map((session) => {
+
+                                            const device = session.devices![0];
+                                            const parser = new UAParser(device.user_agent);
+                                            const result = parser.getResult();
+
+                                            return (
+                                                <TableRow key={session.id}>
+                                                    <TableCell className="space-x-1">
+                                                        <span>{result.os.name}</span>
+                                                        <span
+                                                            className="text-xs text-neutral-500">{result.os.version}</span>
+                                                    </TableCell>
+                                                    <TableCell className="space-x-1">
+                                                        <span>{result.browser.name}</span>
+                                                        <span
+                                                            className="text-xs text-neutral-500">{result.browser.version}</span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {new Date(session.authenticated_at!).toLocaleString()}
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })
+                                        :
+                                        <ErrorDisplay title="No sessions" message=""/>
+                                }
+                            </TableBody>
+                        </Table>
+                    </CardContent>
                 </Card>
             </div>
         </div>
