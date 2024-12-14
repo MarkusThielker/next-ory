@@ -11,21 +11,11 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
     const identityId = (await params).id;
 
     const identityApi = await getIdentityApi();
-    const identity = await identityApi.getIdentity({
-        id: identityId,
-        includeCredential: [
-            'code',
-            'code_recovery',
-            'link_recovery',
-            'lookup_secret',
-            'oidc',
-            'passkey',
-            'password',
-            'totp',
-            'webauthn',
-        ],
-    })
-        .then((response) => response.data)
+    const identity = await identityApi.getIdentity({ id: identityId })
+        .then((response) => {
+            console.log('identity', response.data);
+            return response.data;
+        })
         .catch(() => {
             console.log('Identity not found');
         });
@@ -85,11 +75,11 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                             </TableHeader>
                             <TableBody>
                                 {
-                                    Object.entries(identity.credentials).map(([key, value]) => {
+                                    Object.entries(identity.credentials!).map(([key, value]) => {
                                         return (
                                             <TableRow key={key}>
                                                 <TableCell>{key}</TableCell>
-                                                <TableCell>{value.identifiers[0]}</TableCell>
+                                                <TableCell>{value.identifiers![0]}</TableCell>
                                             </TableRow>
                                         );
                                     })
