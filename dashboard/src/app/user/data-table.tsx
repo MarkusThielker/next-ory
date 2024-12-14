@@ -3,7 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Identity } from '@ory/client';
 import { DataTable } from '@/components/ui/data-table';
-import { CircleCheck, CircleX, Copy, MoreHorizontal, Trash, UserCheck, UserMinus, UserX } from 'lucide-react';
+import { CircleCheck, CircleX, Copy, MoreHorizontal, Trash, UserCheck, UserMinus, UserPen, UserX } from 'lucide-react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import React, { useEffect, useRef, useState } from 'react';
 import { FetchIdentityPageProps } from '@/app/user/page';
@@ -133,10 +133,10 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                             </DropdownMenuItem>
                             <DropdownMenuSeparator/>
                             <Link href={`/user/${identity.id}`}>
-                                <DropdownMenuItem>View identity</DropdownMenuItem>
-                            </Link>
-                            <Link href={`/user/${identity.id}/sessions`}>
-                                <DropdownMenuItem>View sessions</DropdownMenuItem>
+                                <DropdownMenuItem className="flex items-center space-x-2">
+                                    <UserPen className="h-4 w-4"/>
+                                    <span>View identity</span>
+                                </DropdownMenuItem>
                             </Link>
                             <DropdownMenuSeparator/>
                             <DropdownMenuItem
