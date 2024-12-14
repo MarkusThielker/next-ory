@@ -4,6 +4,7 @@ import { ErrorDisplay } from '@/components/error';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { IdentityTraitForm } from '@/components/forms/IdentityTraitForm';
 import { KratosSchema } from '@/lib/forms/identity-form';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default async function UserDetailsPage({ params }: { params: Promise<{ id: string }> }) {
 
@@ -74,6 +75,28 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                         <CardTitle>Credentials</CardTitle>
                         <CardDescription>All authentication mechanisms registered with this identity</CardDescription>
                     </CardHeader>
+                    <CardContent className="space-y-4">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Type</TableHead>
+                                    <TableHead>Value</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {
+                                    Object.entries(identity.credentials).map(([key, value]) => {
+                                        return (
+                                            <TableRow key={key}>
+                                                <TableCell>{key}</TableCell>
+                                                <TableCell>{value.identifiers[0]}</TableCell>
+                                            </TableRow>
+                                        );
+                                    })
+                                }
+                            </TableBody>
+                        </Table>
+                    </CardContent>
                 </Card>
                 <Card>
                     <CardHeader>
