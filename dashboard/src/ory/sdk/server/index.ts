@@ -1,6 +1,14 @@
 'use server';
 
-import { Configuration, FrontendApi, IdentityApi, MetadataApi, OAuth2Api } from '@ory/client';
+import {
+    Configuration,
+    FrontendApi,
+    IdentityApi,
+    MetadataApi,
+    OAuth2Api,
+    PermissionApi,
+    RelationshipApi,
+} from '@ory/client';
 
 
 // ####################################################################################
@@ -91,4 +99,58 @@ const kratosMetadataApi = new MetadataApi(
 
 export async function getKratosMetadataApi() {
     return kratosMetadataApi;
+}
+
+
+// ####################################################################################
+// Relationship API
+// ####################################################################################
+
+const relationshipApi = new RelationshipApi(new Configuration(
+    {
+        basePath: process.env.ORY_KETO_ADMIN_URL,
+        baseOptions: {
+            withCredentials: true,
+        },
+    },
+));
+
+export async function getRelationshipApi() {
+    return relationshipApi;
+}
+
+
+// ####################################################################################
+// Permission API
+// ####################################################################################
+
+const permissionApi = new PermissionApi(new Configuration(
+    {
+        basePath: process.env.ORY_KETO_ADMIN_URL,
+        baseOptions: {
+            withCredentials: true,
+        },
+    },
+));
+
+export async function getPermissionApi() {
+    return permissionApi;
+}
+
+
+// ####################################################################################
+// Keto Metadata API
+// ####################################################################################
+
+const ketoMetadataApi = new MetadataApi(new Configuration(
+    {
+        basePath: process.env.ORY_KETO_ADMIN_URL,
+        baseOptions: {
+            withCredentials: true,
+        },
+    },
+));
+
+export async function getKetoMetadataApi() {
+    return ketoMetadataApi;
 }
