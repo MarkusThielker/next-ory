@@ -70,6 +70,39 @@ services:
     networks:
       - internal
 
+  ory-keto-migrate:
+    container_name: ory-keto-migrate
+    image: oryd/keto:v0.12.0
+    restart: on-failure
+    volumes:
+      - ./ory/keto:/etc/config/keto
+      - ory-keto-data:/home/ory
+      - ory-keto-data:/var/lib/sqlite
+    command: migrate -c /etc/config/keto/keto.yaml up --yes
+    depends_on:
+      ory-postgres:
+        condition: service_healthy
+    networks:
+      - internal
+
+
+  ory-keto:
+    container_name: ory-keto
+    image: oryd/keto:v0.12.0
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:4466:4466 # public
+      - 127.0.0.1:4467:4467 # admin
+    volumes:
+      - ./ory/keto:/etc/config/keto
+      - ory-keto-data:/home/ory
+      - ory-keto-data:/var/lib/sqlite
+    command: serve -c /etc/config/keto/keto.yaml all
+    depends_on:
+      ory-keto-migrate:
+        condition: service_completed_successfully
+    networks:
+      - internal
 
   ory-mailslurper:
     container_name: ory-mailslurper
@@ -111,4 +144,5 @@ networks:
 volumes:
   ory-kratos-data:
   ory-hydra-data:
+  ory-keto-data:
   ory-postgres-data:
