@@ -25,10 +25,6 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    if (request.nextUrl.pathname === '/unauthorised') {
-        return NextResponse.next();
-    }
-
     const permissionApi = await getPermissionApi();
     const isAdmin = await permissionApi.checkPermission({
         namespace: 'roles',
@@ -46,13 +42,23 @@ export async function middleware(request: NextRequest) {
         });
 
     if (isAdmin) {
+        if (request.nextUrl.pathname === '/unauthorised') {
+            return redirect('/', 'HAS PERMISSION BUT ACCESSING /unauthorized');
+        }
         return NextResponse.next();
     } else {
-        console.log('MISSING PERMISSION');
-        const url = `${process.env.NEXT_PUBLIC_DASHBOARD_NODE_URL}/unauthorised`;
-        console.log('REDIRECT TO', url);
-        return NextResponse.redirect(url!);
+        if (request.nextUrl.pathname === '/unauthorised') {
+            return NextResponse.next();
+        }
+        return redirect('/unauthorised', 'MISSING SESSION');
     }
+}
+
+function redirect(path: string, reason: string) {
+    console.log(reason);
+    const url = `${process.env.NEXT_PUBLIC_DASHBOARD_NODE_URL}${path}`;
+    console.log('REDIRECT TO', url);
+    return NextResponse.redirect(url!);
 }
 
 export const config = {
