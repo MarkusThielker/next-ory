@@ -3,7 +3,7 @@ interface ErrorDisplayProps {
     message: string;
 }
 
-export async function ErrorDisplay({ title, message }: ErrorDisplayProps) {
+export function ErrorDisplay({ title, message }: ErrorDisplayProps) {
     return (
         <>
             <p className="text-3xl font-bold leading-tight tracking-tight">{title}</p>
