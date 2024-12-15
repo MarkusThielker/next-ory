@@ -2,13 +2,8 @@ import type { Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
-import { Toaster } from '@/components/ui/sonner';
 import React from 'react';
 import { ThemeProvider } from 'next-themes';
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/app-sidebar';
-import { Separator } from '@/components/ui/separator';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from '@/components/ui/breadcrumb';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -56,31 +51,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             enableSystem
             disableTransitionOnChange
         >
-            <SidebarProvider className="max-h-screen min-h-screen">
-                <AppSidebar className="mx-1"/>
-                <SidebarInset className="overflow-hidden p-6 space-y-6">
-                    <header className="flex h-4 items-center gap-2">
-                        <SidebarTrigger className="-ml-1 p-1"/>
-                        <Separator orientation="vertical" className="mr-2 h-4"/>
-                        {
-                            // TODO: implement dynamic Breadcrumbs
-                        }
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem className="hidden md:block">
-                                    <BreadcrumbLink href="/">
-                                        Ory Dashboard
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
-                    </header>
-                    <div className="flex-1 overflow-scroll">
-                        {children}
-                    </div>
-                </SidebarInset>
-                <Toaster/>
-            </SidebarProvider>
+            {children}
         </ThemeProvider>
         </body>
         </html>
