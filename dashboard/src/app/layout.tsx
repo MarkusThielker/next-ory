@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'] });
 const APP_NAME = 'Next Ory';
 const APP_DEFAULT_TITLE = 'Next Ory';
 const APP_TITLE_TEMPLATE = `%s | ${APP_DEFAULT_TITLE}`;
-const APP_DESCRIPTION = 'Get started with ORY authentication quickly and easily.';
+const APP_DESCRIPTION = 'Get started with Ory authentication quickly and easily.';
 
 export const metadata = {
     applicationName: APP_NAME,
