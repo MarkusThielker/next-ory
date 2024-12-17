@@ -1,4 +1,4 @@
-import { getHydraMetadataApi, getKratosMetadataApi } from '@/ory/sdk/server';
+import { getHydraMetadataApi, getKetoMetadataApi, getKratosMetadataApi } from '@/ory/sdk/server';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
@@ -17,6 +17,7 @@ export default async function RootPage() {
     const kratosDBStatusData = await fetch(process.env.ORY_KRATOS_ADMIN_URL + '/health/ready');
     const kratosDBStatus = await kratosDBStatusData.json() as { status: string };
 
+
     const hydraMetadataApi = await getHydraMetadataApi();
 
     const hydraVersion = await hydraMetadataApi
@@ -30,13 +31,27 @@ export default async function RootPage() {
     const hydraDBStatusData = await fetch(process.env.ORY_KRATOS_ADMIN_URL + '/health/ready');
     const hydraDBStatus = await hydraDBStatusData.json() as { status: string };
 
+
+    const ketoMetadataApi = await getKetoMetadataApi();
+
+    const ketoVersion = await ketoMetadataApi
+        .getVersion()
+        .then(res => res.data.version)
+        .catch(() => '');
+
+    const ketoStatusData = await fetch(process.env.ORY_KETO_ADMIN_URL + '/health/alive');
+    const ketoStatus = await ketoStatusData.json() as { status: string };
+
+    const ketoDBStatusData = await fetch(process.env.ORY_KETO_ADMIN_URL + '/health/ready');
+    const ketoDBStatus = await ketoDBStatusData.json() as { status: string };
+
     return (
         <div className="flex flex-col space-y-4">
             <div>
                 <p className="text-3xl font-bold leading-tight tracking-tight">Software Stack</p>
                 <p className="text-lg font-light">See the list of all applications in your stack</p>
             </div>
-            <div className="flex flex-row space-x-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Card className="flex-1">
                     <CardHeader>
                         <CardTitle>
@@ -73,7 +88,24 @@ export default async function RootPage() {
                         </Badge>
                     </CardContent>
                 </Card>
-                <div className="flex-1"></div>
+                <Card className="flex-1">
+                    <CardHeader>
+                        <CardTitle>
+                            Ory Keto
+                        </CardTitle>
+                        <CardDescription>
+                            Version {ketoVersion}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-x-1">
+                        <Badge variant={kratosStatus.status === 'ok' ? 'success' : 'destructive'}>
+                            Keto {ketoStatus.status.toUpperCase()}
+                        </Badge>
+                        <Badge variant={kratosStatus.status === 'ok' ? 'success' : 'destructive'}>
+                            Database {ketoDBStatus.status.toUpperCase()}
+                        </Badge>
+                    </CardContent>
+                </Card>
                 <div className="flex-1"></div>
             </div>
         </div>

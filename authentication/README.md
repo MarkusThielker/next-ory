@@ -1,6 +1,6 @@
 # Next-Ory - Authentication
 
-This directory contains a NextJS 14 (app router) UI Node, implementing all Ory Kratos and Ory Hydra UI flows.
+This directory contains a NextJS 15 (app router) UI Node, implementing all Ory Kratos and Ory Hydra UI flows.
 
 ## Stack
 

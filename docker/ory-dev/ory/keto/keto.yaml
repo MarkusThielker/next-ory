@@ -1,0 +1,43 @@
+#
+# Documentation: https://www.ory.sh/docs/keto/reference/configuration
+# Configuration UI: https://www.ory.sh/docs/keto/reference/configuration-editor
+#
+
+#
+# Configure the Keto logging
+#
+log:
+  level: info
+  format: text
+  leak_sensitive_values: true
+
+#
+# Configure the datasource. Alternative for development purposes is 'memory' (not persistent!)
+#
+dsn: postgres://postgres:postgres@ory-postgres:5432/keto?sslmode=disable&max_conns=20&max_idle_conns=4
+
+#
+# Set the required namespaces
+#
+namespaces:
+  - id: 0
+    name: roles
+
+serve:
+  read:
+    host: 0.0.0.0
+    port: 4466
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://localhost:3000
+        - http://localhost:4000
+
+  write:
+    host: 0.0.0.0
+    port: 4467
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://localhost:3000
+        - http://localhost:4000

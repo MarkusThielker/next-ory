@@ -1,5 +1,5 @@
 import React from 'react';
-import { IdentityDataTable } from '@/app/user/data-table';
+import { IdentityDataTable } from '@/app/(inside)/user/data-table';
 import { getIdentityApi } from '@/ory/sdk/server';
 import { SearchInput } from '@/components/search-input';
 

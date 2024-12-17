@@ -6,7 +6,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { CircleCheck, CircleX, Copy, MoreHorizontal, Trash, UserCheck, UserMinus, UserPen, UserX } from 'lucide-react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import React, { useEffect, useRef, useState } from 'react';
-import { FetchIdentityPageProps } from '@/app/user/page';
+import { FetchIdentityPageProps } from '@/app/(inside)/user/page';
 import { Spinner } from '@/components/ui/spinner';
 import {
     DropdownMenu,
@@ -29,7 +29,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { blockIdentity, deleteIdentity, deleteIdentitySessions, unblockIdentity } from '@/app/user/action';
+import { blockIdentity, deleteIdentity, deleteIdentitySessions, unblockIdentity } from '@/app/(inside)/user/action';
 
 interface IdentityDataTableProps {
     data: Identity[];
