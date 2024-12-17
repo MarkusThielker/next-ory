@@ -10,10 +10,15 @@ fi
 # set user id variable
 IDENTITY_ID=$1
 
-# execute Ory Keto CLI command to make user an admin
-docker compose exec ory-keto \
-    ory create relation-tuples \
-    \{'namespace':'roles','object':'admin','relation':'member','subject_id':IDENTITY_ID}
+# execute curl to Ory Keto write endpoint
+curl --request PUT \
+  --url http://localhost:4467/admin/relation-tuples \
+  --data '{
+           "namespace": "roles",
+           "object": "admin",
+           "relation": "member",
+           "subject_id": "'"$IDENTITY_ID"'"
+         }'
 
-# respond with success message
-echo "Identity $IDENTITY_ID was given the admin role."
+# write success response to terminal
+echo "Applied admin role to the user with ID $IDENTITY_ID"
