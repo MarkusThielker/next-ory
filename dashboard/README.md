@@ -1,6 +1,6 @@
 # Next-Ory - Dashboard
 
-This directory contains a NextJS 15 (app router) UI Node, implementing the admin dashboard to the ORY Kratos instance.
+This directory contains a NextJS 15 (app router) UI Node, implementing the admin dashboard for the Ory admin APIs.
 
 ## Stack
 

@@ -1,15 +1,14 @@
 # Next-Ory
 
-Get started with ORY authentication quickly and easily.
+Get started with the Ory stack quickly and easily.
 
 > [!Warning]  
 > This project is work in progress. There is no guarantee that everything will work as it should and breaking changes in
 > the future are possible.
 
-The goal of this project is to create an easy-to-use setup to self-host [Ory Kratos](https://www.ory.sh/kratos)
-and [Ory Hydra](https://www.ory.sh/hydra). It will contain an authentication UI, implementing all self-service flows for
-Ory Kratos and Ory Hydra, as well as an admin UI. All UI components are written in NextJS and Typescript, and styled
-using shadcn/ui and TailwindCSS.
+The goal of this project is to create an easy-to-use setup to self-host the [Ory](https://www.ory.sh) stack with all its
+components. It will contain an authentication UI, implementing all self-service flows for Ory Kratos and Ory Hydra, as
+well as an admin UI. All UI components are written in NextJS and Typescript, and styled using shadcn/ui and TailwindCSS.
 
 ## Getting started
 
@@ -41,6 +40,15 @@ bun install
 bun run dev
 ```
 
+To access the admin dashboard, the `identity` has to be a `member` of the `admin` role. (Relation: roles:admin@<
+identity_id>#member) <br/>
+The identity ID is displayed on the screen when accessing the dashboard without sufficient permissions. <br/>
+Use the identity ID to execute the following script with the identity ID as an argument.
+
+```bash
+sh docker/ory-dev/keto-make-admin.sh <identity_id>
+```
+
 ## Deployment
 
 *soon.*
@@ -58,11 +66,10 @@ Hydra. It is implemented in a way, that customizing style and page layout is ver
 
 ## Admin Dashboard
 
-Right now I am working on the admin dashboard for Ory Kratos. It will provide you with an overview of your instance and
-let you manage users, OAuth2 applications and more. It is ***work in progress*** and should not be used in anything
-important as it is not yet protected by Keto permissions but only by a valid Kratos session!
+Right now I am working on the admin dashboard for all Ory applications. It will provide you with an overview of your
+instances and let you manage users, OAuth2 applications and more. It is ***work in progress*** and should be handled
+with caution.
 
 ![A browser window showing the home page of the dashboard UI in dark mode](./documentation/.img/d-dashboard-dark.png)
 
 ![A browser window showing the users page of the dashboard UI in dark mode](./documentation/.img/d-users-dark.png)
-
