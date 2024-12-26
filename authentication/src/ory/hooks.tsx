@@ -18,12 +18,6 @@ export const HandleError = (
     return async (
         error: AxiosError<any, unknown>,
     ): Promise<AxiosError | void> => {
-        if (!error.response || error.response?.status === 0) {
-            window.location.href = `/flow/error?error=${encodeURIComponent(
-                JSON.stringify(error.response),
-            )}`;
-            return Promise.resolve();
-        }
 
         const responseData = error.response?.data || {};
 
