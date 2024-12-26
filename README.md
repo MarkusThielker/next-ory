@@ -31,6 +31,9 @@ bun install
 bun run dev
 ```
 
+Create an account using the authentication UI on http://localhost:3000.
+The verification code can be found on the dummy SMTP dashboard on http://localhost:4436.
+
 Inside another terminal session we can start the dashboard UI:
 
 ```bash

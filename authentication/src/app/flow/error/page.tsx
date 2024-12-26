@@ -51,7 +51,7 @@ export default function Error() {
 
     return (
         <>
-            <Card>
+            <Card className="mx-4 md:mx-8 max-w-5xl">
                 <CardHeader>
                     <CardTitle>An error occurred</CardTitle>
                 </CardHeader>
@@ -61,7 +61,7 @@ export default function Error() {
                     </p>
                 </CardContent>
             </Card>
-            <Button variant="ghost" asChild>
+            <Button asChild>
                 <Link href="/" className="inline-flex space-x-2" passHref>
                     Go back
                 </Link>
