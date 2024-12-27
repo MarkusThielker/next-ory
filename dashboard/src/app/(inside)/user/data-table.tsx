@@ -4,7 +4,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Identity } from '@ory/client';
 import { DataTable } from '@/components/ui/data-table';
 import { CircleCheck, CircleX, Copy, MoreHorizontal, Trash, UserCheck, UserMinus, UserPen, UserX } from 'lucide-react';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import React, { useEffect, useRef, useState } from 'react';
 import { FetchIdentityPageProps } from '@/app/(inside)/user/page';
 import { Spinner } from '@/components/ui/spinner';
@@ -30,6 +29,7 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { blockIdentity, deleteIdentity, deleteIdentitySessions, unblockIdentity } from '@/app/(inside)/user/action';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface IdentityDataTableProps {
     data: Identity[];
@@ -83,24 +83,24 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                             <span>{email.value}</span>
                             {
                                 email.verified ?
-                                    <HoverCard>
-                                        <HoverCardTrigger>
+                                    <Tooltip>
+                                        <TooltipTrigger>
                                             <CircleCheck/>
-                                        </HoverCardTrigger>
-                                        <HoverCardContent>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
                                             <span>This email was confirmed at </span>
                                             {new Date(email.verified_at!!).toLocaleString()}
-                                        </HoverCardContent>
-                                    </HoverCard>
+                                        </TooltipContent>
+                                    </Tooltip>
                                     :
-                                    <HoverCard>
-                                        <HoverCardTrigger>
+                                    <Tooltip>
+                                        <TooltipTrigger>
                                             <CircleX/>
-                                        </HoverCardTrigger>
-                                        <HoverCardContent>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
                                             This email is not confirmed yet
-                                        </HoverCardContent>
-                                    </HoverCard>
+                                        </TooltipContent>
+                                    </Tooltip>
                             }
                         </div>
                     );
