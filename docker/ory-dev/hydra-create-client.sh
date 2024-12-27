@@ -2,15 +2,21 @@
 # Ory Hydra CLI and writes the client id and
 # client secret to the command line.
 
-read -r -p "Did you modify the script according to your needs? (y/N)? " answer
-if [ answer != "y" && anser != "Y" ]; then
-    exit 0
+# Check if the number of arguments is correct
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 <name> <owner>"
+  exit 1
 fi
+
+name=$1
+owner=$2
 
 # it is likely you will have to set different redirect-uris
 # depending on the application you are trying to connect.
 code_client=$(docker compose exec ory-hydra \
     hydra create client \
+    --name "$name" \
+    --owner "$owner" \
     --endpoint http://localhost:4445 \
     --grant-type authorization_code,refresh_token \
     --response-type code,id_token \
