@@ -87,10 +87,7 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
         });
 
     const sessions = await identityApi.listIdentitySessions({ id: identityId })
-        .then((response) => {
-            console.log('sessions', response.data);
-            return response.data;
-        })
+        .then((response) => response.data)
         .catch(() => {
             console.log('No sessions found');
         });
@@ -122,8 +119,8 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                 <p className="text-3xl font-bold leading-tight tracking-tight">{addresses[0].value}</p>
                 <p className="text-lg font-light">{identity.id}</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <Card className="row-span-2">
                     <CardHeader>
                         <CardTitle>Traits</CardTitle>
                         <CardDescription>All identity properties specified in the identity schema</CardDescription>
