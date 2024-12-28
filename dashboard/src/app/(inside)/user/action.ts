@@ -2,9 +2,26 @@
 
 import { getIdentityApi } from '@/ory/sdk/server';
 import { revalidatePath } from 'next/cache';
+import { UpdateIdentityBody } from '@ory/client/api';
 
 interface IdentityIdProps {
     id: string;
+}
+
+interface UpdatedIdentityProps {
+    id: string;
+    body: UpdateIdentityBody;
+}
+
+export async function updateIdentity({ id, body }: UpdatedIdentityProps) {
+
+    const identityApi = await getIdentityApi();
+    const { data } = await identityApi.updateIdentity({
+        id: id,
+        updateIdentityBody: body,
+    });
+
+    return data;
 }
 
 export async function deleteIdentitySessions({ id }: IdentityIdProps) {
