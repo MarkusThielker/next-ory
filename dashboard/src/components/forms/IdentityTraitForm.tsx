@@ -1,82 +1,108 @@
 'use client';
 
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { generateZodSchema, KratosSchema, KratosSchemaProperties } from '@/lib/forms/identity-form';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { KratosSchema, kratosSchemaToZod } from '@/lib/forms/identity-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import { Identity } from '@ory/client';
-import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
+import DynamicForm from '@/components/dynamic-form';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { zu } from 'zod_utilz';
+import { updateIdentity } from '@/app/(inside)/user/action';
+import { useState } from 'react';
 
 interface IdentityTraitFormProps {
     schema: KratosSchema;
     identity: Identity;
 }
 
-function renderUiNodes(form: UseFormReturn, properties: KratosSchemaProperties, prefix?: string): any {
-
-    let keyPrefix = prefix ? prefix + '.' : '';
-
-    return Object.entries(properties).map(([key, value]) => {
-            if (value.type === 'object') {
-                return renderUiNodes(form, value.properties!, key);
-            } else if (value.type === 'boolean') {
-                return (
-                    <FormField
-                        control={form.control}
-                        name={keyPrefix + key}
-                        key={key}
-                        className="space-y-0"
-                        render={({ field }) => (
-                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                <Checkbox {...field} checked={field.value}/>
-                                <FormLabel>{value.title}</FormLabel>
-                            </FormItem>
-                        )}
-                    />
-                );
-            } else {
-                return (
-                    <FormField
-                        control={form.control}
-                        name={keyPrefix + key}
-                        key={key}
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{value.title}</FormLabel>
-                                <FormControl>
-                                    <Input placeholder={value.title} readOnly {...field} />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                );
-            }
-        },
-    );
-}
-
 export function IdentityTraitForm({ schema, identity }: IdentityTraitFormProps) {
 
-    const zodIdentitySchema = generateZodSchema(schema);
-    const form = useForm<z.infer<typeof zodIdentitySchema>>({
-        defaultValues: identity.traits,
-        resolver: zodResolver(zodIdentitySchema),
+    const [currentIdentity, setCurrentIdentity] = useState(identity);
+
+    const generated = kratosSchemaToZod(schema);
+    const metadata = z.object({
+        metadata_public: zu.stringToJSON(),
+        metadata_admin: zu.stringToJSON(),
     });
 
-    function onSubmit(values: z.infer<typeof zodIdentitySchema>) {
-        toast.message(JSON.stringify(values, null, 4));
-    }
+    const zodIdentitySchema = generated.merge(metadata);
+
+    const form = useForm<z.infer<typeof zodIdentitySchema>>({
+        resolver: zodResolver(zodIdentitySchema),
+        defaultValues: {
+            ...currentIdentity.traits,
+            metadata_public: currentIdentity.metadata_public ? JSON.stringify(currentIdentity.metadata_public) : '',
+            metadata_admin: currentIdentity.metadata_admin ? JSON.stringify(currentIdentity.metadata_admin) : '',
+        },
+    });
+
+    const onValid = (data: z.infer<typeof zodIdentitySchema>) => {
+
+        const traits = structuredClone(data);
+        delete traits['metadata_public'];
+        delete traits['metadata_admin'];
+
+        updateIdentity({
+            id: currentIdentity.id,
+            body: {
+                schema_id: currentIdentity.schema_id,
+                state: currentIdentity.state!,
+                traits: traits,
+                metadata_public: data.metadata_public,
+                metadata_admin: data.metadata_admin,
+            },
+        })
+            .then((identity) => {
+                setCurrentIdentity(identity);
+                toast.success('Identity updated');
+            })
+            .catch(() => {
+                toast.error('Updating identity failed');
+            });
+    };
+
+    const onInvalid = (data: z.infer<typeof zodIdentitySchema>) => {
+        console.log('data', data);
+        toast.error('Invalid values');
+    };
 
     return (
-        <Form {...form}>
-            <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4">
-                {
-                    renderUiNodes(form, schema.properties.traits.properties)
-                }
-            </form>
-        </Form>
+        <DynamicForm
+            form={form}
+            properties={schema.properties.traits.properties}
+            onValid={onValid}
+            onInvalid={onInvalid}
+            submitLabel="Update Identity"
+        >
+            <FormField
+                {...form.register('metadata_public')}
+                key={'metadata_public'}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Public Metadata</FormLabel>
+                        <FormControl>
+                            <Textarea placeholder="Public Metadata" {...field} />
+                        </FormControl>
+                        <FormDescription>This has to be valid JSON</FormDescription>
+                    </FormItem>
+                )}
+            />
+            <FormField
+                {...form.register('metadata_admin')}
+                key={'metadata_admin'}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Admin Metadata</FormLabel>
+                        <FormControl>
+                            <Textarea placeholder="Admin Metadata" {...field} />
+                        </FormControl>
+                        <FormDescription>This has to be valid JSON</FormDescription>
+                    </FormItem>
+                )}
+            />
+        </DynamicForm>
     );
 }
