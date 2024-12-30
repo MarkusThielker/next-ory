@@ -34,8 +34,10 @@ export function IdentityTraitForm({ schema, identity }: IdentityTraitFormProps) 
         resolver: zodResolver(zodIdentitySchema),
         defaultValues: {
             ...currentIdentity.traits,
-            metadata_public: currentIdentity.metadata_public ? JSON.stringify(currentIdentity.metadata_public) : '',
-            metadata_admin: currentIdentity.metadata_admin ? JSON.stringify(currentIdentity.metadata_admin) : '',
+            metadata_public: currentIdentity.metadata_public ?
+                JSON.stringify(currentIdentity.metadata_public) : '{}',
+            metadata_admin: currentIdentity.metadata_admin ?
+                JSON.stringify(currentIdentity.metadata_admin) : '{}',
         },
     });
 
