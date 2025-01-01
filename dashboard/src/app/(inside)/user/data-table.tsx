@@ -259,7 +259,7 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogAction onClick={() => deleteIdentitySessions({ id: currentIdentity.id })}>
+                                    <AlertDialogAction onClick={() => deleteIdentitySessions(currentIdentity.id)}>
                                         Invalidate sessions
                                     </AlertDialogAction>
                                     <AlertDialogCancel>
@@ -281,7 +281,7 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogAction
-                                        onClick={() => blockIdentity({ id: currentIdentity.id })}>
+                                        onClick={() => blockIdentity(currentIdentity.id)}>
                                         Block identity
                                     </AlertDialogAction>
                                     <AlertDialogCancel>
@@ -303,7 +303,7 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogAction
-                                        onClick={() => unblockIdentity({ id: currentIdentity.id })}>
+                                        onClick={() => unblockIdentity(currentIdentity.id)}>
                                         Unblock identity
                                     </AlertDialogAction>
                                     <AlertDialogCancel>
@@ -326,7 +326,7 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogAction
-                                        onClick={() => deleteIdentity({ id: currentIdentity.id })}>
+                                        onClick={() => deleteIdentity(currentIdentity.id)}>
                                         Delete identity
                                     </AlertDialogAction>
                                     <AlertDialogCancel>

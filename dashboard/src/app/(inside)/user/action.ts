@@ -4,10 +4,6 @@ import { getIdentityApi } from '@/ory/sdk/server';
 import { revalidatePath } from 'next/cache';
 import { UpdateIdentityBody } from '@ory/client/api';
 
-interface IdentityIdProps {
-    id: string;
-}
-
 interface UpdatedIdentityProps {
     id: string;
     body: UpdateIdentityBody;
@@ -24,7 +20,7 @@ export async function updateIdentity({ id, body }: UpdatedIdentityProps) {
     return data;
 }
 
-export async function deleteIdentitySessions({ id }: IdentityIdProps) {
+export async function deleteIdentitySessions(id: string) {
 
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.deleteIdentitySessions({ id });
@@ -34,7 +30,35 @@ export async function deleteIdentitySessions({ id }: IdentityIdProps) {
     return data;
 }
 
-export async function blockIdentity({ id }: IdentityIdProps) {
+export async function createRecoveryCode(id: string) {
+
+    const identityApi = await getIdentityApi();
+    const { data } = await identityApi.createRecoveryCodeForIdentity({
+        createRecoveryCodeForIdentityBody: {
+            identity_id: id,
+        },
+    });
+
+    console.log('Created recovery code for user', id, data);
+
+    return data;
+}
+
+export async function createRecoveryLink(id: string) {
+
+    const identityApi = await getIdentityApi();
+    const { data } = await identityApi.createRecoveryLinkForIdentity({
+        createRecoveryLinkForIdentityBody: {
+            identity_id: id,
+        },
+    });
+
+    console.log('Created recovery link for user', id, data);
+
+    return data;
+}
+
+export async function blockIdentity(id: string) {
 
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.patchIdentity({
@@ -53,7 +77,7 @@ export async function blockIdentity({ id }: IdentityIdProps) {
     revalidatePath('/user');
 }
 
-export async function unblockIdentity({ id }: IdentityIdProps) {
+export async function unblockIdentity(id: string) {
 
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.patchIdentity({
@@ -72,7 +96,7 @@ export async function unblockIdentity({ id }: IdentityIdProps) {
     revalidatePath('/user');
 }
 
-export async function deleteIdentity({ id }: IdentityIdProps) {
+export async function deleteIdentity(id: string) {
 
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.deleteIdentity({ id });
