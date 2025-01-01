@@ -9,6 +9,7 @@ import { UAParser } from 'ua-parser-js';
 import { RecoveryIdentityAddress, VerifiableIdentityAddress } from '@ory/client';
 import { Badge } from '@/components/ui/badge';
 import { Check, X } from 'lucide-react';
+import { IdentityActions } from '@/components/identity/identity-actions';
 
 interface MergedAddress {
     recovery_id?: string;
@@ -120,13 +121,22 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                 <p className="text-lg font-light">{identity.id}</p>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                <Card className="row-span-2">
+                <Card className="row-span-3">
                     <CardHeader>
                         <CardTitle>Traits</CardTitle>
                         <CardDescription>All identity properties specified in the identity schema</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <IdentityTraitForm schema={identitySchema} identity={identity}/>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Actions</CardTitle>
+                        <CardDescription>Quick actions to manage the identity</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <IdentityActions identity={identity}/>
                     </CardContent>
                 </Card>
                 <Card>
