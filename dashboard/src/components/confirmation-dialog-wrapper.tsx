@@ -14,18 +14,19 @@ import {
 } from '@/components/ui/alert-dialog';
 import { ReactNode } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import type { VariantProps } from 'class-variance-authority';
 
 interface ButtonWithConfirmDialogProps {
-    buttonProps?: ButtonProps,
-    onCancel?: () => any
-    onSubmit: () => any
-    tooltipContent?: string
-    dialogTitle: string
-    dialogDescription: string
-    dialogButtonCancel?: string
-    dialogButtonSubmit?: string
-    dialogButtonSubmitProps?: typeof buttonVariants
-    children: ReactNode
+    buttonProps?: ButtonProps;
+    onCancel?: () => any;
+    onSubmit: () => any;
+    tooltipContent?: string;
+    dialogTitle: string;
+    dialogDescription: string;
+    dialogButtonCancel?: string;
+    dialogButtonSubmit?: string;
+    dialogButtonSubmitProps?: VariantProps<typeof buttonVariants>;
+    children: ReactNode;
 }
 
 export function ConfirmationDialogWrapper(

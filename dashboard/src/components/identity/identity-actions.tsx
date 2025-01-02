@@ -25,8 +25,7 @@ export function IdentityActions({ identity }: IdentityActionProps,
     const router = useRouter();
 
     return (
-        <div className="space-x-2">
-
+        <>
             <ConfirmationDialogWrapper
                 onSubmit={async () => {
                     await createRecoveryCode(identity.id)
@@ -41,7 +40,7 @@ export function IdentityActions({ identity }: IdentityActionProps,
                 dialogDescription="Are you sure you want to create a recovery code for this identity?"
                 dialogButtonSubmit="Create code"
             >
-                <Button size="icon">
+                <Button className="mr-2" size="icon">
                     <Key className="h-4"/>
                 </Button>
             </ConfirmationDialogWrapper>
@@ -60,7 +59,7 @@ export function IdentityActions({ identity }: IdentityActionProps,
                 dialogDescription="Are you sure you want to create a recovery link for this identity?"
                 dialogButtonSubmit="Create link"
             >
-                <Button size="icon">
+                <Button className="mr-2" size="icon">
                     <Link className="h-4"/>
                 </Button>
             </ConfirmationDialogWrapper>
@@ -78,7 +77,7 @@ export function IdentityActions({ identity }: IdentityActionProps,
                         dialogDescription="Are you sure you want to deactivate this identity? The user will not be able to sign-in or use any active session until re-activation!"
                         dialogButtonSubmit="Deactivate"
                     >
-                        <Button size="icon">
+                        <Button className="mr-2" size="icon">
                             <UserX className="h-4"/>
                         </Button>
                     </ConfirmationDialogWrapper>
@@ -94,7 +93,7 @@ export function IdentityActions({ identity }: IdentityActionProps,
                         dialogDescription="Are you sure you want to activate this identity?"
                         dialogButtonSubmit="Activate"
                     >
-                        <Button size="icon">
+                        <Button className="mr-2" size="icon">
                             <UserCheck className="h-4"/>
                         </Button>
                     </ConfirmationDialogWrapper>
@@ -112,7 +111,7 @@ export function IdentityActions({ identity }: IdentityActionProps,
                 dialogButtonSubmit="Invalidate sessions"
                 dialogButtonSubmitProps={{ variant: 'destructive' }}
             >
-                <Button size="icon">
+                <Button className="mr-2" size="icon">
                     <UserMinus className="h-4"/>
                 </Button>
             </ConfirmationDialogWrapper>
@@ -132,11 +131,11 @@ export function IdentityActions({ identity }: IdentityActionProps,
                 dialogButtonSubmit="Delete identity"
                 dialogButtonSubmitProps={{ variant: 'destructive' }}
             >
-                <Button size="icon">
+                <Button className="mr-2" size="icon">
                     <Trash className="h-4"/>
                 </Button>
             </ConfirmationDialogWrapper>
 
-        </div>
+        </>
     );
 }
