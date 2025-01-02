@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, ButtonProps } from '@/components/ui/button';
+import { ButtonProps, buttonVariants } from '@/components/ui/button';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,9 +23,8 @@ interface ButtonWithConfirmDialogProps {
     dialogTitle: string
     dialogDescription: string
     dialogButtonCancel?: string
-    dialogButtonCancelProps?: ButtonProps
     dialogButtonSubmit?: string
-    dialogButtonSubmitProps?: ButtonProps
+    dialogButtonSubmitProps?: typeof buttonVariants
     children: ReactNode
 }
 
@@ -37,7 +36,6 @@ export function ConfirmationDialogWrapper(
         dialogTitle,
         dialogDescription,
         dialogButtonCancel,
-        dialogButtonCancelProps,
         dialogButtonSubmit,
         dialogButtonSubmitProps,
         children,
@@ -59,19 +57,13 @@ export function ConfirmationDialogWrapper(
                         <AlertDialogDescription>{dialogDescription}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel asChild>
-                            <Button
-                                onClick={onCancel}
-                                {...dialogButtonCancelProps}>
-                                {dialogButtonCancel ?? 'Cancel'}
-                            </Button>
+                        <AlertDialogCancel onClick={onCancel}>
+                            {dialogButtonCancel ?? 'Cancel'}
                         </AlertDialogCancel>
-                        <AlertDialogAction asChild>
-                            <Button
-                                onClick={onSubmit}
-                                {...dialogButtonSubmitProps}>
-                                {dialogButtonSubmit ?? 'Confirm'}
-                            </Button>
+                        <AlertDialogAction
+                            onClick={onSubmit}
+                            className={buttonVariants({ ...dialogButtonSubmitProps })}>
+                            {dialogButtonSubmit ?? 'Confirm'}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
