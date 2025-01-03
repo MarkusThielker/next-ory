@@ -2,7 +2,7 @@
 
 import { getIdentityApi } from '@/ory/sdk/server';
 import { revalidatePath } from 'next/cache';
-import { UpdateIdentityBody } from '@ory/client/api';
+import { DeleteIdentityCredentialsTypeEnum, UpdateIdentityBody } from '@ory/client';
 
 interface UpdatedIdentityProps {
     id: string;
@@ -16,6 +16,23 @@ export async function updateIdentity({ id, body }: UpdatedIdentityProps) {
         id: id,
         updateIdentityBody: body,
     });
+
+    console.log('Updated identity', data);
+
+    return data;
+}
+
+interface DeleteIdentityCredentialProps {
+    id: string;
+    type: DeleteIdentityCredentialsTypeEnum;
+}
+
+export async function deleteIdentityCredential({ id, type }: DeleteIdentityCredentialProps) {
+
+    const identityApi = await getIdentityApi();
+    const { data } = await identityApi.deleteIdentityCredentials({ id, type });
+
+    console.log('Credential removed', data);
 
     return data;
 }
