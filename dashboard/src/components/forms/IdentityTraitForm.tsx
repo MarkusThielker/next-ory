@@ -10,7 +10,7 @@ import DynamicForm from '@/components/dynamic-form';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { zu } from 'zod_utilz';
-import { updateIdentity } from '@/app/(inside)/user/action';
+import { updateIdentity } from '@/lib/action/identity';
 import { useState } from 'react';
 
 interface IdentityTraitFormProps {

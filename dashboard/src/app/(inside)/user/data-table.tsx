@@ -28,7 +28,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { blockIdentity, deleteIdentity, deleteIdentitySessions, unblockIdentity } from '@/app/(inside)/user/action';
+import { blockIdentity, deleteIdentity, deleteIdentitySessions, unblockIdentity } from '@/lib/action/identity';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface IdentityDataTableProps {

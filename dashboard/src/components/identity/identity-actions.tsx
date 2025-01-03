@@ -11,7 +11,7 @@ import {
     deleteIdentity,
     deleteIdentitySessions,
     unblockIdentity,
-} from '@/app/(inside)/user/action';
+} from '@/lib/action/identity';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 

@@ -2,7 +2,7 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ConfirmationDialogWrapper } from '@/components/confirmation-dialog-wrapper';
-import { deleteIdentityCredential } from '@/app/(inside)/user/action';
+import { deleteIdentityCredential } from '@/lib/action/identity';
 import { Button } from '@/components/ui/button';
 import { Trash } from 'lucide-react';
 import { DeleteIdentityCredentialsTypeEnum, Identity } from '@ory/client';
