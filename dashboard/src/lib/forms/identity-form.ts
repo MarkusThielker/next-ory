@@ -1,22 +1,39 @@
+'use client';
+
 import { z } from 'zod';
 
-// interface for a list of properties
+export const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
+type Literal = z.infer<typeof literalSchema>;
+type Json = Literal | { [key: string]: Json } | Json[];
+export const jsonSchema: z.ZodType<Json> = z.lazy(() =>
+    z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)]),
+);
+
+// Interface for a list of properties
 export interface KratosSchemaProperties {
     [key: string]: {
-        type: string;
+        type: 'string' | 'number' | 'integer' | 'boolean' | 'object' | 'array' | 'null';
         format?: string;
         title: string;
         minLength?: number;
         maxLength?: number;
         minimum?: number;
         maximum?: number;
-        required?: boolean;
+        required: boolean;
         description?: string;
-        properties?: KratosSchemaProperties
+        properties?: KratosSchemaProperties;
+        enum?: any[];
+        pattern?: string;
+        items?: KratosSchemaProperties;
+        oneOf?: KratosSchemaProperties[];
+        anyOf?: KratosSchemaProperties[];
+        allOf?: KratosSchemaProperties[];
+        dependencies?: { [key: string]: string[] | KratosSchemaProperties };
+        additionalProperties?: boolean;
     };
 }
 
-// interface for the kratos identity schema
+// Interface for the Kratos identity schema
 export interface KratosSchema {
     $id: string;
     $schema: string;
@@ -32,53 +49,50 @@ export interface KratosSchema {
     };
 }
 
-export function generateZodSchema(properties: KratosSchemaProperties) {
+export function kratosSchemaToZod(schema: KratosSchema): z.ZodObject<any> {
 
-    const zodSchema = z.object({});
+    // Function to recursively convert Kratos properties to Zod types
+    function convertProperties(properties: KratosSchemaProperties): { [key: string]: z.ZodTypeAny } {
+        const zodProps: { [key: string]: z.ZodTypeAny } = {};
+        for (const key in properties) {
+            const prop = properties[key];
 
-    for (const [key, value] of Object.entries(properties)) {
-        let zodType;
-        switch (value.type) {
-            case 'string':
-                zodType = z.string();
-                if (value.format === 'email') {
-                    zodType = z.string().email();
-                }
-                if (value.minLength) {
-                    zodType = zodType.min(value.minLength);
-                }
-                if (value.maxLength) {
-                    zodType = zodType.max(value.maxLength);
-                }
-                break;
-            case 'integer':
-            case 'number':
-                zodType = z.number();
-                if (value.minimum) {
-                    zodType = zodType.min(value.minimum);
-                }
-                if (value.maximum) {
-                    zodType = zodType.max(value.maximum);
-                }
-                break;
-            case 'boolean':
-                zodType = z.boolean();
-                break;
-            case 'object':
-                const schemaCopy = structuredClone(schema);
-                schemaCopy.properties.traits.properties = value.properties!;
-                zodType = generateZodSchema(schemaCopy);
-                break;
-            default:
-                zodType = z.any();
+            let zodType;
+            switch (prop.type) {
+                case 'string':
+                    zodType = z.string();
+                    if (prop.format === 'email') zodType = zodType.email();
+                    if (prop.minLength) zodType = zodType.min(prop.minLength);
+                    if (prop.maxLength) zodType = zodType.max(prop.maxLength);
+                    if (prop.pattern) zodType = zodType.regex(new RegExp(prop.pattern));
+                    break;
+                case 'number':
+                case 'integer':
+                    zodType = z.number();
+                    if (prop.minimum) zodType = zodType.min(prop.minimum);
+                    if (prop.maximum) zodType = zodType.max(prop.maximum);
+                    break;
+                case 'boolean':
+                    zodType = z.boolean();
+                    break;
+                case 'object':
+                    zodType = z.object(convertProperties(prop.properties || {}));
+                    break;
+                case 'array':
+                    zodType = z.array(
+                        prop.items ? kratosSchemaToZod({ properties: { item: prop.items } } as any).shape.item : z.any(),
+                    );
+                    break;
+                default:
+                    zodType = z.any(); // Fallback to any for unknown types
+            }
+
+            if (prop.enum) zodType = zodType.refine((val) => prop.enum!.includes(val));
+
+            zodProps[key] = zodType;
         }
-
-        if (!value.required) {
-            zodType = zodType.nullable();
-        }
-
-        zodSchema.extend({ [key]: zodType });
+        return zodProps;
     }
 
-    return zodSchema;
+    return z.object(convertProperties(schema.properties.traits.properties));
 }

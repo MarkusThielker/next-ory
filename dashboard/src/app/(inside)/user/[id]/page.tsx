@@ -2,13 +2,15 @@ import React from 'react';
 import { getIdentityApi } from '@/ory/sdk/server';
 import { ErrorDisplay } from '@/components/error';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { IdentityTraitForm } from '@/components/forms/IdentityTraitForm';
+import { IdentityTraits } from '@/components/identity/identity-traits';
 import { KratosSchema } from '@/lib/forms/identity-form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { UAParser } from 'ua-parser-js';
 import { RecoveryIdentityAddress, VerifiableIdentityAddress } from '@ory/client';
 import { Badge } from '@/components/ui/badge';
 import { Check, X } from 'lucide-react';
+import { IdentityActions } from '@/components/identity/identity-actions';
+import { IdentityCredentials } from '@/components/identity/identity-credentials';
 
 interface MergedAddress {
     recovery_id?: string;
@@ -87,10 +89,7 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
         });
 
     const sessions = await identityApi.listIdentitySessions({ id: identityId })
-        .then((response) => {
-            console.log('sessions', response.data);
-            return response.data;
-        })
+        .then((response) => response.data)
         .catch(() => {
             console.log('No sessions found');
         });
@@ -122,14 +121,23 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                 <p className="text-3xl font-bold leading-tight tracking-tight">{addresses[0].value}</p>
                 <p className="text-lg font-light">{identity.id}</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <Card className="row-span-3">
                     <CardHeader>
                         <CardTitle>Traits</CardTitle>
                         <CardDescription>All identity properties specified in the identity schema</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <IdentityTraitForm schema={identitySchema} identity={identity}/>
+                        <IdentityTraits schema={identitySchema} identity={identity}/>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Actions</CardTitle>
+                        <CardDescription>Quick actions to manage the identity</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <IdentityActions identity={identity}/>
                     </CardContent>
                 </Card>
                 <Card>
@@ -183,26 +191,7 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                         <CardDescription>All authentication mechanisms registered with this identity</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Type</TableHead>
-                                    <TableHead>Value</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {
-                                    Object.entries(identity.credentials!).map(([key, value]) => {
-                                        return (
-                                            <TableRow key={key}>
-                                                <TableCell>{key}</TableCell>
-                                                <TableCell>{value.identifiers![0]}</TableCell>
-                                            </TableRow>
-                                        );
-                                    })
-                                }
-                            </TableBody>
-                        </Table>
+                        <IdentityCredentials identity={identity}/>
                     </CardContent>
                 </Card>
                 <Card>

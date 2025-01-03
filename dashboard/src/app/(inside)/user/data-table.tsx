@@ -15,7 +15,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import {
@@ -28,7 +28,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { blockIdentity, deleteIdentity, deleteIdentitySessions, unblockIdentity } from '@/app/(inside)/user/action';
+import { blockIdentity, deleteIdentity, deleteIdentitySessions, unblockIdentity } from '@/lib/action/identity';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface IdentityDataTableProps {
@@ -259,12 +259,14 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogAction onClick={() => deleteIdentitySessions({ id: currentIdentity.id })}>
-                                        Invalidate sessions
-                                    </AlertDialogAction>
                                     <AlertDialogCancel>
                                         Cancel
                                     </AlertDialogCancel>
+                                    <AlertDialogAction
+                                        className={buttonVariants({ variant: 'destructive' })}
+                                        onClick={() => deleteIdentitySessions(currentIdentity.id)}>
+                                        Invalidate sessions
+                                    </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>
@@ -280,13 +282,13 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogAction
-                                        onClick={() => blockIdentity({ id: currentIdentity.id })}>
-                                        Block identity
-                                    </AlertDialogAction>
                                     <AlertDialogCancel>
                                         Cancel
                                     </AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={() => blockIdentity(currentIdentity.id)}>
+                                        Block identity
+                                    </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>
@@ -302,13 +304,13 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogAction
-                                        onClick={() => unblockIdentity({ id: currentIdentity.id })}>
-                                        Unblock identity
-                                    </AlertDialogAction>
                                     <AlertDialogCancel>
                                         Cancel
                                     </AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={() => unblockIdentity(currentIdentity.id)}>
+                                        Unblock identity
+                                    </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>
@@ -325,13 +327,14 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
-                                    <AlertDialogAction
-                                        onClick={() => deleteIdentity({ id: currentIdentity.id })}>
-                                        Delete identity
-                                    </AlertDialogAction>
                                     <AlertDialogCancel>
                                         Cancel
                                     </AlertDialogCancel>
+                                    <AlertDialogAction
+                                        className={buttonVariants({ variant: 'destructive' })}
+                                        onClick={() => deleteIdentity(currentIdentity.id)}>
+                                        Delete identity
+                                    </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
                         </AlertDialog>
