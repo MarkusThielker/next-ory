@@ -10,6 +10,7 @@ import { RecoveryIdentityAddress, VerifiableIdentityAddress } from '@ory/client'
 import { Badge } from '@/components/ui/badge';
 import { Check, X } from 'lucide-react';
 import { IdentityActions } from '@/components/identity/identity-actions';
+import { IdentityCredentials } from '@/components/identity/identity-credentials';
 
 interface MergedAddress {
     recovery_id?: string;
@@ -190,26 +191,7 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                         <CardDescription>All authentication mechanisms registered with this identity</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Type</TableHead>
-                                    <TableHead>Value</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {
-                                    Object.entries(identity.credentials!).map(([key, value]) => {
-                                        return (
-                                            <TableRow key={key}>
-                                                <TableCell>{key}</TableCell>
-                                                <TableCell>{value.identifiers![0]}</TableCell>
-                                            </TableRow>
-                                        );
-                                    })
-                                }
-                            </TableBody>
-                        </Table>
+                        <IdentityCredentials identity={identity}/>
                     </CardContent>
                 </Card>
                 <Card>
