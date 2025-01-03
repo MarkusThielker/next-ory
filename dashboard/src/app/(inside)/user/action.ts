@@ -19,6 +19,8 @@ export async function updateIdentity({ id, body }: UpdatedIdentityProps) {
 
     console.log('Updated identity', data);
 
+    revalidatePath('/user');
+
     return data;
 }
 
@@ -34,6 +36,8 @@ export async function deleteIdentityCredential({ id, type }: DeleteIdentityCrede
 
     console.log('Credential removed', data);
 
+    revalidatePath('/user');
+
     return data;
 }
 
@@ -43,6 +47,8 @@ export async function deleteIdentitySessions(id: string) {
     const { data } = await identityApi.deleteIdentitySessions({ id });
 
     console.log('Deleted identity\'s sessions', data);
+
+    revalidatePath('/user');
 
     return data;
 }
