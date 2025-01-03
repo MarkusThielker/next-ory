@@ -2,7 +2,7 @@ import React from 'react';
 import { getIdentityApi } from '@/ory/sdk/server';
 import { ErrorDisplay } from '@/components/error';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { IdentityTraitForm } from '@/components/forms/IdentityTraitForm';
+import { IdentityTraits } from '@/components/identity/identity-traits';
 import { KratosSchema } from '@/lib/forms/identity-form';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { UAParser } from 'ua-parser-js';
@@ -128,7 +128,7 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                         <CardDescription>All identity properties specified in the identity schema</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <IdentityTraitForm schema={identitySchema} identity={identity}/>
+                        <IdentityTraits schema={identitySchema} identity={identity}/>
                     </CardContent>
                 </Card>
                 <Card>

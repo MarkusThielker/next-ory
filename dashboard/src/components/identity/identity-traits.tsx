@@ -18,7 +18,7 @@ interface IdentityTraitFormProps {
     identity: Identity;
 }
 
-export function IdentityTraitForm({ schema, identity }: IdentityTraitFormProps) {
+export function IdentityTraits({ schema, identity }: IdentityTraitFormProps) {
 
     const [currentIdentity, setCurrentIdentity] = useState(identity);
 
