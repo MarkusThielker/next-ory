@@ -10,7 +10,7 @@ import {
     VerifiableIdentityAddress,
 } from '@ory/client';
 import { getDB } from '@/db';
-import { identities, identityRecoveryAddresses, identityVerifiableAddresses } from '@/db/schema';
+import { identities, identity_recovery_addresses, identity_verifiable_addresses } from '@/db/schema';
 import { eq, ilike, or, sql } from 'drizzle-orm';
 
 interface QueryIdentitiesProps {
@@ -31,14 +31,14 @@ export async function queryIdentities({ page, pageSize, query }: QueryIdentities
     const db = await getDB();
     const result = await db.select()
         .from(identities)
-        .leftJoin(identityVerifiableAddresses, eq(identities.id, identityVerifiableAddresses.identityId))
-        .leftJoin(identityRecoveryAddresses, eq(identities.id, identityRecoveryAddresses.identityId))
+        .leftJoin(identity_verifiable_addresses, eq(identities.id, identity_verifiable_addresses.identity_id))
+        .leftJoin(identity_recovery_addresses, eq(identities.id, identity_recovery_addresses.identity_id))
         .where(or(
             sql`${identities.id}::text ILIKE
             ${`%${query}%`}`,
             sql`${identities.traits}::text ILIKE
             ${`%${query}%`}`,
-            ilike(identityVerifiableAddresses.value, `%${query}%`),
+            ilike(identity_verifiable_addresses.value, `%${query}%`),
         ))
         .orderBy(identities.id)
         .limit(pageSize)
@@ -47,14 +47,14 @@ export async function queryIdentities({ page, pageSize, query }: QueryIdentities
     const resultCount = await db.$count(
         db.select()
             .from(identities)
-            .leftJoin(identityVerifiableAddresses, eq(identities.id, identityVerifiableAddresses.identityId))
-            .leftJoin(identityRecoveryAddresses, eq(identities.id, identityRecoveryAddresses.identityId))
+            .leftJoin(identity_verifiable_addresses, eq(identities.id, identity_verifiable_addresses.identity_id))
+            .leftJoin(identity_recovery_addresses, eq(identities.id, identity_recovery_addresses.identity_id))
             .where(or(
                 sql`${identities.id}::text ILIKE
                 ${`%${query}%`}`,
                 sql`${identities.traits}::text ILIKE
                 ${`%${query}%`}`,
-                ilike(identityVerifiableAddresses.value, `%${query}%`),
+                ilike(identity_verifiable_addresses.value, `%${query}%`),
             ))
             .as('subquery'),
     );
