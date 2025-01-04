@@ -1,49 +1,8 @@
 import React from 'react';
 import { IdentityDataTable } from '@/app/(inside)/user/data-table';
-import { getIdentityApi } from '@/ory/sdk/server';
 import { SearchInput } from '@/components/search-input';
-
-export interface FetchIdentityPageProps {
-    pageSize: number;
-    pageToken: string;
-    query: string;
-}
-
-async function fetchIdentityPage({ pageSize, pageToken, query }: FetchIdentityPageProps) {
-    'use server';
-
-    const identityApi = await getIdentityApi();
-    const response = await identityApi.listIdentities({
-        pageSize: pageSize,
-        pageToken: pageToken,
-        previewCredentialsIdentifierSimilar: query,
-    });
-
-    return {
-        data: response.data,
-        tokens: parseTokens(response.headers.link),
-    };
-}
-
-function parseTokens(link: string) {
-
-    const parsed = link.split(',').map((it) => {
-        const startRel = it.lastIndexOf('rel="');
-        const endRel = it.lastIndexOf('"');
-        const rel = it.slice(startRel, endRel);
-
-        const startToken = it.lastIndexOf('page_token=');
-        const endToken = it.lastIndexOf('&');
-        const token = it.slice(startToken, endToken);
-
-        return [rel, token];
-    });
-
-    return new Map(parsed.map(obj => [
-        obj[0].replace('rel="', ''),
-        obj[1].replace('page_token=', ''),
-    ]));
-}
+import { queryIdentities } from '@/lib/action/identity';
+import { IdentityPagination } from '@/components/pagination';
 
 export default async function UserPage(
     {
@@ -54,12 +13,14 @@ export default async function UserPage(
 ) {
 
     const params = await searchParams;
+
+    const page = params.page ? Number(params.page) : 1;
     const query = params.query ? params.query as string : '';
 
-    let pageSize = 250;
-    let pageToken: string = '00000000-0000-0000-0000-000000000000';
+    let pageSize = 50;
+    let paginationRange = 11;
 
-    const initialFetch = await fetchIdentityPage({ pageSize, pageToken, query: query });
+    const { data, itemCount, pageCount } = await queryIdentities({ page, pageSize, query });
 
     return (
         <div className="space-y-4">
@@ -70,13 +31,23 @@ export default async function UserPage(
                 </p>
             </div>
             <div className="space-y-2">
-                <SearchInput queryParamKey="query" placeholder="Search for identifiers (Email, Username...)"/>
-                <IdentityDataTable
-                    data={initialFetch.data}
-                    pageSize={pageSize}
-                    pageToken={initialFetch.tokens.get('next')}
-                    query={query}
-                    fetchIdentityPage={fetchIdentityPage}/>
+                <SearchInput
+                    value={query}
+                    pageParamKey="page"
+                    queryParamKey="query"
+                    placeholder="Search for addresses and traits"/>
+                <div>
+                    <p className="text-xs text-neutral-500">{itemCount} item{itemCount && itemCount > 1 ? 's' : ''} found</p>
+                    <IdentityDataTable
+                        data={data}
+                        page={page}
+                        query={query}/>
+                </div>
+                <IdentityPagination
+                    page={page}
+                    pageCount={pageCount}
+                    pageParamKey="page"
+                    paginationRange={paginationRange}/>
             </div>
         </div>
     );

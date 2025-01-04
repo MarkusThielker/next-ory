@@ -4,9 +4,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Identity } from '@ory/client';
 import { DataTable } from '@/components/ui/data-table';
 import { CircleCheck, CircleX, Copy, MoreHorizontal, Trash, UserCheck, UserMinus, UserPen, UserX } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
-import { FetchIdentityPageProps } from '@/app/(inside)/user/page';
-import { Spinner } from '@/components/ui/spinner';
+import React, { useEffect, useState } from 'react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -33,13 +31,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 interface IdentityDataTableProps {
     data: Identity[];
-    pageSize: number;
-    pageToken: string | undefined;
+    page: number;
     query: string;
-    fetchIdentityPage: (props: FetchIdentityPageProps) => Promise<{ data: Identity[], tokens: Map<string, string> }>;
 }
 
-export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdentityPage }: IdentityDataTableProps) {
+export function IdentityDataTable({ data, page, query }: IdentityDataTableProps) {
 
     const columns: ColumnDef<Identity>[] = [
         {
@@ -81,27 +77,24 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                     return (
                         <div className="flex flex-row space-x-2 items-center">
                             <span>{email.value}</span>
-                            {
-                                email.verified ?
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            <CircleCheck/>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <span>This email was confirmed at </span>
-                                            {new Date(email.verified_at!!).toLocaleString()}
-                                        </TooltipContent>
-                                    </Tooltip>
-                                    :
-                                    <Tooltip>
-                                        <TooltipTrigger>
-                                            <CircleX/>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            This email is not confirmed yet
-                                        </TooltipContent>
-                                    </Tooltip>
-                            }
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    {
+                                        email.verified ? <CircleCheck/> : <CircleX/>
+                                    }
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    {
+                                        email.verified ?
+                                            <>
+                                                <span>This email was confirmed at </span>
+                                                {new Date(email.verified_at!!).toLocaleString()}
+                                            </>
+                                            :
+                                            <p>This email is not confirmed yet</p>
+                                    }
+                                </TooltipContent>
+                            </Tooltip>
                         </div>
                     );
                 }
@@ -189,49 +182,10 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
     ];
 
     const [items, setItems] = useState<Identity[]>(data);
-    const [nextToken, setNextToken] = useState<string | undefined>(pageToken);
 
-    // react on changes from ssr (query params)
     useEffect(() => {
         setItems(data);
-        setNextToken(pageToken);
-    }, [data, pageSize, pageToken, query]);
-
-    // infinite scroll handling
-    const infiniteScrollSensor = useRef(null);
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting) {
-                    fetchMore();
-                }
-            },
-            { threshold: 0.5 }, // Adjust threshold as needed
-        );
-
-        if (infiniteScrollSensor.current) {
-            observer.observe(infiniteScrollSensor.current);
-        }
-
-        return () => {
-            if (infiniteScrollSensor.current) {
-                observer.unobserve(infiniteScrollSensor.current);
-            }
-        };
-    }, [items]);
-
-    const fetchMore = async () => {
-        if (!nextToken) return;
-
-        const response = await fetchIdentityPage({
-            pageSize: pageSize,
-            pageToken: nextToken,
-            query: query,
-        });
-
-        setItems([...items, ...response.data]);
-        setNextToken(response.tokens.get('next') ?? undefined);
-    };
+    }, [data]);
 
     // quick actions
     const [currentIdentity, setCurrentIdentity] = useState<Identity | undefined>(undefined);
@@ -339,13 +293,6 @@ export function IdentityDataTable({ data, pageSize, pageToken, query, fetchIdent
                             </AlertDialogContent>
                         </AlertDialog>
                     </>
-                )
-            }
-            {
-                nextToken && (
-                    <div className="flex w-full justify-center">
-                        <Spinner ref={infiniteScrollSensor} className="h-10"/>
-                    </div>
                 )
             }
         </>
