@@ -2,7 +2,44 @@
 
 import { getIdentityApi } from '@/ory/sdk/server';
 import { revalidatePath } from 'next/cache';
-import { DeleteIdentityCredentialsTypeEnum, UpdateIdentityBody } from '@ory/client';
+import {
+    DeleteIdentityCredentialsTypeEnum,
+    Identity,
+    RecoveryIdentityAddress,
+    UpdateIdentityBody,
+    VerifiableIdentityAddress,
+} from '@ory/client';
+import { getDB } from '@/db';
+import { identities, identityRecoveryAddresses, identityVerifiableAddresses } from '@/db/schema';
+import { eq, ilike, or, sql } from 'drizzle-orm';
+
+interface QueryIdentitiesProps {
+    page: number,
+    pageSize?: number,
+    query?: string,
+}
+
+export async function queryIdentities({ page, pageSize, query }: QueryIdentitiesProps) {
+
+    const db = await getDB();
+    const results = await db.select()
+        .from(identities)
+        .leftJoin(identityVerifiableAddresses, eq(identities.id, identityVerifiableAddresses.identityId))
+        .leftJoin(identityRecoveryAddresses, eq(identities.id, identityRecoveryAddresses.identityId))
+        .where(or(
+            sql`${identities.traits}::text ILIKE
+            ${`%${query}%`}`,
+            ilike(identityVerifiableAddresses.value, `%${query}%`),
+        ));
+
+    return results.map((it) => {
+        const typed = it.identities as unknown as Identity;
+        typed.verifiable_addresses = [it.identity_verifiable_addresses] as unknown as VerifiableIdentityAddress[];
+        typed.recovery_addresses = [it.identity_verifiable_addresses] as unknown as RecoveryIdentityAddress[];
+        return typed;
+    });
+}
+
 
 interface UpdatedIdentityProps {
     id: string;
