@@ -2,6 +2,7 @@ import React from 'react';
 import { IdentityDataTable } from '@/app/(inside)/user/data-table';
 import { SearchInput } from '@/components/search-input';
 import { queryIdentities } from '@/lib/action/identity';
+import { IdentityPagination } from '@/components/pagination';
 
 export default async function UserPage(
     {
@@ -17,6 +18,7 @@ export default async function UserPage(
     const query = params.query ? params.query as string : '';
 
     let pageSize = 50;
+    let paginationRange = 11;
 
     const { data, pageCount } = await queryIdentities({ page, pageSize, query });
 
@@ -31,12 +33,18 @@ export default async function UserPage(
             <div className="space-y-2">
                 <SearchInput
                     value={query}
+                    pageParamKey="page"
                     queryParamKey="query"
-                    placeholder="Search for identifiers (Email, Username...)"/>
+                    placeholder="Search for addresses and traits"/>
                 <IdentityDataTable
                     data={data}
                     page={page}
                     query={query}/>
+                <IdentityPagination
+                    page={page}
+                    pageCount={pageCount}
+                    pageParamKey="page"
+                    paginationRange={paginationRange}/>
             </div>
         </div>
     );

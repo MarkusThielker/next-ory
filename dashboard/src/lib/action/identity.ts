@@ -21,6 +21,13 @@ interface QueryIdentitiesProps {
 
 export async function queryIdentities({ page, pageSize, query }: QueryIdentitiesProps) {
 
+    if (page < 1 || pageSize < 1) {
+        return {
+            data: [],
+            pageCount: 0,
+        };
+    }
+
     const db = await getDB();
     const result = await db.select()
         .from(identities)
@@ -31,6 +38,7 @@ export async function queryIdentities({ page, pageSize, query }: QueryIdentities
             ${`%${query}%`}`,
             ilike(identityVerifiableAddresses.value, `%${query}%`),
         ))
+        .orderBy(identities.id)
         .limit(pageSize)
         .offset((page - 1) * pageSize);
 

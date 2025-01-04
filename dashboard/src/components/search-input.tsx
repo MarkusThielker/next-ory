@@ -7,12 +7,13 @@ import { ChangeEvent, HTMLInputTypeAttribute } from 'react';
 interface SearchInputProps {
     value: string;
     placeholder: string;
+    pageParamKey: string;
     queryParamKey: string;
     type?: HTMLInputTypeAttribute;
     className?: string;
 }
 
-export function SearchInput({ value, placeholder, queryParamKey, type, className }: SearchInputProps) {
+export function SearchInput({ value, placeholder, pageParamKey, queryParamKey, type, className }: SearchInputProps) {
 
     const router = useRouter();
     const params = useSearchParams();
@@ -27,6 +28,8 @@ export function SearchInput({ value, placeholder, queryParamKey, type, className
         } else {
             newParams.set(queryParamKey, value);
         }
+
+        newParams.delete(pageParamKey);
 
         router.replace('?' + newParams.toString());
     };
