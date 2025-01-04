@@ -2,7 +2,7 @@
 
 import { Input } from '@/components/ui/input';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, HTMLInputTypeAttribute } from 'react';
+import { HTMLInputTypeAttribute, useState } from 'react';
 
 interface SearchInputProps {
     value: string;
@@ -18,9 +18,10 @@ export function SearchInput({ value, placeholder, pageParamKey, queryParamKey, t
     const router = useRouter();
     const params = useSearchParams();
 
-    const onSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const [searchInput, setSearchInput] = useState(value);
 
-        const value = event.target.value;
+    const onSearchChange = (value: string) => {
+
         const newParams = new URLSearchParams(params.toString());
 
         if (value.length < 1) {
@@ -34,12 +35,19 @@ export function SearchInput({ value, placeholder, pageParamKey, queryParamKey, t
         router.replace('?' + newParams.toString());
     };
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            onSearchChange(searchInput);
+        }
+    };
+
     return (
         <Input
-            value={value}
+            value={searchInput}
             type={type ?? 'text'}
             placeholder={placeholder}
             className={className}
-            onChange={onSearchChange}/>
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleKeyDown}/>
     );
 }
