@@ -34,6 +34,8 @@ export async function queryIdentities({ page, pageSize, query }: QueryIdentities
         .leftJoin(identityVerifiableAddresses, eq(identities.id, identityVerifiableAddresses.identityId))
         .leftJoin(identityRecoveryAddresses, eq(identities.id, identityRecoveryAddresses.identityId))
         .where(or(
+            sql`${identities.id}::text ILIKE
+            ${`%${query}%`}`,
             sql`${identities.traits}::text ILIKE
             ${`%${query}%`}`,
             ilike(identityVerifiableAddresses.value, `%${query}%`),
@@ -48,6 +50,8 @@ export async function queryIdentities({ page, pageSize, query }: QueryIdentities
             .leftJoin(identityVerifiableAddresses, eq(identities.id, identityVerifiableAddresses.identityId))
             .leftJoin(identityRecoveryAddresses, eq(identities.id, identityRecoveryAddresses.identityId))
             .where(or(
+                sql`${identities.id}::text ILIKE
+                ${`%${query}%`}`,
                 sql`${identities.traits}::text ILIKE
                 ${`%${query}%`}`,
                 ilike(identityVerifiableAddresses.value, `%${query}%`),
@@ -64,6 +68,7 @@ export async function queryIdentities({ page, pageSize, query }: QueryIdentities
 
     return {
         data: resultTyped,
+        itemCount: resultCount,
         pageCount: Math.ceil(resultCount / pageSize),
     };
 }
