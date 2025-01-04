@@ -16,9 +16,9 @@ export default async function UserPage(
     const page = params.page ? Number(params.page) : 1;
     const query = params.query ? params.query as string : '';
 
-    let pageSize = 250;
+    let pageSize = 50;
 
-    const initialData = await queryIdentities({ page, pageSize, query });
+    const { data, pageCount } = await queryIdentities({ page, pageSize, query });
 
     return (
         <div className="space-y-4">
@@ -34,7 +34,7 @@ export default async function UserPage(
                     queryParamKey="query"
                     placeholder="Search for identifiers (Email, Username...)"/>
                 <IdentityDataTable
-                    data={initialData}
+                    data={data}
                     page={page}
                     query={query}/>
             </div>

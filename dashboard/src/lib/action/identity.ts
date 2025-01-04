@@ -15,14 +15,14 @@ import { eq, ilike, or, sql } from 'drizzle-orm';
 
 interface QueryIdentitiesProps {
     page: number,
-    pageSize?: number,
+    pageSize: number,
     query?: string,
 }
 
 export async function queryIdentities({ page, pageSize, query }: QueryIdentitiesProps) {
 
     const db = await getDB();
-    const results = await db.select()
+    const result = await db.select()
         .from(identities)
         .leftJoin(identityVerifiableAddresses, eq(identities.id, identityVerifiableAddresses.identityId))
         .leftJoin(identityRecoveryAddresses, eq(identities.id, identityRecoveryAddresses.identityId))
@@ -30,14 +30,34 @@ export async function queryIdentities({ page, pageSize, query }: QueryIdentities
             sql`${identities.traits}::text ILIKE
             ${`%${query}%`}`,
             ilike(identityVerifiableAddresses.value, `%${query}%`),
-        ));
+        ))
+        .limit(pageSize)
+        .offset((page - 1) * pageSize);
 
-    return results.map((it) => {
+    const resultCount = await db.$count(
+        db.select()
+            .from(identities)
+            .leftJoin(identityVerifiableAddresses, eq(identities.id, identityVerifiableAddresses.identityId))
+            .leftJoin(identityRecoveryAddresses, eq(identities.id, identityRecoveryAddresses.identityId))
+            .where(or(
+                sql`${identities.traits}::text ILIKE
+                ${`%${query}%`}`,
+                ilike(identityVerifiableAddresses.value, `%${query}%`),
+            ))
+            .as('subquery'),
+    );
+
+    const resultTyped = result.map((it) => {
         const typed = it.identities as unknown as Identity;
         typed.verifiable_addresses = [it.identity_verifiable_addresses] as unknown as VerifiableIdentityAddress[];
         typed.recovery_addresses = [it.identity_verifiable_addresses] as unknown as RecoveryIdentityAddress[];
         return typed;
     });
+
+    return {
+        data: resultTyped,
+        pageCount: Math.ceil(resultCount / pageSize),
+    };
 }
 
 
