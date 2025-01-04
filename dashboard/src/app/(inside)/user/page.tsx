@@ -29,7 +29,10 @@ export default async function UserPage(
                 </p>
             </div>
             <div className="space-y-2">
-                <SearchInput queryParamKey="query" placeholder="Search for identifiers (Email, Username...)"/>
+                <SearchInput
+                    value={query}
+                    queryParamKey="query"
+                    placeholder="Search for identifiers (Email, Username...)"/>
                 <IdentityDataTable
                     data={initialData}
                     page={page}

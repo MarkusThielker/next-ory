@@ -5,13 +5,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ChangeEvent, HTMLInputTypeAttribute } from 'react';
 
 interface SearchInputProps {
+    value: string;
     placeholder: string;
     queryParamKey: string;
     type?: HTMLInputTypeAttribute;
     className?: string;
 }
 
-export function SearchInput({ placeholder, queryParamKey, type, className }: SearchInputProps) {
+export function SearchInput({ value, placeholder, queryParamKey, type, className }: SearchInputProps) {
 
     const router = useRouter();
     const params = useSearchParams();
@@ -32,6 +33,7 @@ export function SearchInput({ placeholder, queryParamKey, type, className }: Sea
 
     return (
         <Input
+            value={value}
             type={type ?? 'text'}
             placeholder={placeholder}
             className={className}
