@@ -20,7 +20,7 @@ export default async function UserPage(
     let pageSize = 50;
     let paginationRange = 11;
 
-    const { data, pageCount } = await queryIdentities({ page, pageSize, query });
+    const { data, itemCount, pageCount } = await queryIdentities({ page, pageSize, query });
 
     return (
         <div className="space-y-4">
@@ -36,10 +36,13 @@ export default async function UserPage(
                     pageParamKey="page"
                     queryParamKey="query"
                     placeholder="Search for addresses and traits"/>
-                <IdentityDataTable
-                    data={data}
-                    page={page}
-                    query={query}/>
+                <div>
+                    <p className="text-xs text-neutral-500">{itemCount} item{itemCount && itemCount > 1 ? 's' : ''} found</p>
+                    <IdentityDataTable
+                        data={data}
+                        page={page}
+                        query={query}/>
+                </div>
                 <IdentityPagination
                     page={page}
                     pageCount={pageCount}
