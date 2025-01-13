@@ -10,8 +10,8 @@ export default function InsideLayout({ children }: Readonly<{ children: React.Re
     return (
         <SidebarProvider className="max-h-screen min-h-screen">
             <AppSidebar className="mx-1"/>
-            <SidebarInset className="overflow-hidden p-6 space-y-6">
-                <header className="flex h-4 items-center gap-2">
+            <SidebarInset className="overflow-hidden space-y-6">
+                <header className="flex items-center px-6 pt-6 gap-2">
                     <SidebarTrigger className="-ml-1 p-1"/>
                     <Separator orientation="vertical" className="mr-2 h-4"/>
                     {
@@ -27,7 +27,7 @@ export default function InsideLayout({ children }: Readonly<{ children: React.Re
                         </BreadcrumbList>
                     </Breadcrumb>
                 </header>
-                <div className="flex-1 overflow-scroll">
+                <div className="flex-1 px-6 pb-6 overflow-scroll">
                     {children}
                 </div>
             </SidebarInset>
