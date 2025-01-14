@@ -1,5 +1,7 @@
 import { getOAuth2Api } from '@/ory/sdk/server';
 import { ClientDataTable } from '@/app/(inside)/client/data-table';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export interface FetchClientPageProps {
     pageSize: number;
@@ -50,11 +52,16 @@ export default async function ListClientPage() {
 
     return (
         <div className="space-y-4">
-            <div>
+            <div className="relative">
                 <p className="text-3xl font-bold leading-tight tracking-tight">OAuth2 Clients</p>
                 <p className="text-lg font-light">
                     See and manage all OAuth2 clients registered with your Ory Hydra instance
                 </p>
+                <Button className="absolute bottom-0 right-0" asChild>
+                    <Link href="/client/create">
+                        Create new client
+                    </Link>
+                </Button>
             </div>
             <ClientDataTable
                 data={initialFetch.data}
