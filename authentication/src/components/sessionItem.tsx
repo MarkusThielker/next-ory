@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Session, SessionDevice } from '@ory/client';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { UAParser } from 'ua-parser-js';
+import { IResult, UAParser } from 'ua-parser-js';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -14,17 +14,21 @@ interface SessionItemProps {
 }
 
 export default function SessionItem({ session, showInvalidate, invalidateSession }: SessionItemProps) {
+    const [result, setResult] = useState<IResult | null>(null)
+    
+    useEffect(() => {
+        if (!session.devices || session.devices.length < 1) {
+            return;
+        }
+        
+        const device = session.devices[0]
 
-    if (!session.devices || session.devices.length < 1) {
-        return;
-    }
+            const parser = new UAParser(device.user_agent);
+            setResult(parser.getResult());
 
-    const [device] = useState<SessionDevice>(session.devices[0]);
+    }, [setResult, session])
 
-    const parser = new UAParser(device.user_agent);
-    const result = parser.getResult();
-
-    return (
+    return result ? (
         <Card className="relative w-full">
             <CardHeader>
                 <CardTitle>
@@ -49,5 +53,7 @@ export default function SessionItem({ session, showInvalidate, invalidateSession
                     </Badge>
             }
         </Card>
+    ) : (
+        <div>Loading...</div>
     );
 }
