@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AccountSettings from '@/components/accountSettings';
 import { HandleError, kratos, LogoutLink } from '@/ory';
@@ -14,7 +15,14 @@ import { SettingsFlow, UpdateSettingsFlowBody } from '@ory/client';
 import { toast } from 'sonner';
 
 export default function Page() {
+    return (
+        <Suspense>
+            <PageContext />
+        </Suspense>
+    )
+}
 
+function PageContext() {
     const onLogout = LogoutLink();
 
     const [flow, setFlow] = useState<SettingsFlow>();
@@ -54,17 +62,12 @@ export default function Page() {
                 updateSettingsFlowBody: body,
             })
             .then(({ data }) => {
-
-                // update flow object
                 setFlow(data);
-
-                // show toast for user feedback
                 const message = data.ui.messages?.pop();
                 if (message) {
                     toast.success(message.text);
                 }
 
-                // check if verification is needed
                 if (data.continue_with) {
                     for (const item of data.continue_with) {
                         switch (item.action) {
@@ -75,7 +78,6 @@ export default function Page() {
                     }
                 }
 
-                // check if custom return page was specified
                 if (data.return_to) {
                     window.location.href = data.return_to;
                     return;
@@ -85,7 +87,6 @@ export default function Page() {
     };
 
     useEffect(() => {
-
         if (flow) {
             return;
         }
@@ -96,15 +97,15 @@ export default function Page() {
         }
 
         createFlow(returnTo);
-
     }, [flowId, router, returnTo, createFlow, getFlow]);
 
-    const addQueryParam = useCallback((name: string, value: string) => {
+    const addQueryParam = useCallback(
+        (name: string, value: string) => {
             const newParams = new URLSearchParams(params.toString());
             newParams.set(name, value);
             router.push('?' + newParams.toString());
         },
-        [params],
+        [params, router]
     );
 
     return (
