@@ -12,13 +12,21 @@ export async function middleware(request: NextRequest) {
         .then((response) => response.data)
         .catch(() => null);
 
-    const nodeHost = request.nextUrl.protocol + '//' + request.nextUrl.host;
+
+    const forwardedHost = request.headers.get('x-forwarded-host');
+    const hostHeader = request.headers.get('host');
+    const nodeHost = forwardedHost
+        ? `${request.nextUrl.protocol}//${forwardedHost}`
+        : hostHeader
+            ? `${request.nextUrl.protocol}//${hostHeader}`
+            : `${request.nextUrl.protocol}//${request.nextUrl.host}`;
+
 
     if (!session && !request.nextUrl.pathname.startsWith('/flow')) {
-
         console.log('NO SESSION');
+        const fullReturnUrl = `${nodeHost}${request.nextUrl.pathname}${request.nextUrl.search}`;
 
-        const url = nodeHost + '/flow/login?return_to=' + request.nextUrl.toString();
+        const url = nodeHost + '/flow/login?return_to=' + fullReturnUrl;
 
         console.log('REDIRECT TO', url);
 
