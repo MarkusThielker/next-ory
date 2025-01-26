@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FlowError } from '@ory/client';
 import { AxiosError } from 'axios';
@@ -9,7 +9,15 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-export default function Error() {
+export default function ErrorPage() {
+    return (
+        <Suspense>
+            <Error />
+        </Suspense>
+    )
+}
+
+function Error() {
 
     const [error, setError] = useState<FlowError>();
 
@@ -62,7 +70,7 @@ export default function Error() {
                 </CardContent>
             </Card>
             <Button asChild>
-                <Link href="/" className="inline-flex space-x-2" passHref>
+            <Link href="/" className="inline-flex space-x-2" passHref>
                     Go back
                 </Link>
             </Button>
