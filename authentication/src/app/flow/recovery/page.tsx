@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {Suspense, useCallback, useEffect, useState} from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Flow, HandleError, kratos } from '@/ory';
 import { RecoveryFlow, UpdateRecoveryFlowBody } from '@ory/client';
@@ -11,7 +11,15 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function Recovery() {
+export default function RecoveryPage() {
+    return (
+        <Suspense>
+            <Recovery />
+        </Suspense>
+    )
+}
+
+function Recovery() {
 
     const [flow, setFlow] = useState<RecoveryFlow>();
 
@@ -66,19 +74,27 @@ export default function Recovery() {
     };
 
     useEffect(() => {
+        const fetchFlow = async () => {
+            if (flow) {
+                return;
+            }
 
-        if (flow) {
-            return;
-        }
+            try {
+                if (flowId) {
+                    await getFlow(flowId);
+                    return;
+                }
 
-        if (flowId) {
-            getFlow(flowId);
-            return;
-        }
+                createFlow(returnTo);
+            } catch (err) {
+                console.error("Error in registration flow:", err);
+            }
+        };
 
-        createFlow(returnTo);
-
-    }, [flowId, router, returnTo, flow]);
+        fetchFlow().catch((err) =>
+            console.error("Unhandled error in fetchFlow:", err)
+        );
+    }, [flowId, returnTo, flow, getFlow, createFlow]);
 
     return (
         <Card className="flex flex-col items-center w-full max-w-sm p-4">
