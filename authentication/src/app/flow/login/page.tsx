@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {Suspense, useCallback, useEffect, useState} from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Flow, HandleError, kratos, LogoutLink } from '@/ory';
 import Link from 'next/link';
@@ -11,8 +11,15 @@ import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AxiosError } from 'axios';
 
-export default function Login() {
+export default function LoginPage() {
+    return (
+        <Suspense>
+            <Login />
+        </Suspense>
+    )
+}
 
+function Login() {
     const [flow, setFlow] = useState<LoginFlow>();
 
     const router = useRouter();
@@ -65,19 +72,27 @@ export default function Login() {
     };
 
     useEffect(() => {
+        const fetchFlow = async () => {
+            if (flow) {
+                return;
+            }
 
-        if (flow) {
-            return;
-        }
+            try {
+                if (flowId) {
+                    await getFlow(flowId);
+                    return;
+                }
 
-        if (flowId) {
-            getFlow(flowId).then();
-            return;
-        }
+                createFlow(aal, refresh, returnTo, loginChallenge);
+            } catch (err) {
+                console.error("Error in registration flow:", err);
+            }
+        };
 
-        createFlow(aal, refresh, returnTo, loginChallenge);
-
-    }, [flowId, router, aal, refresh, returnTo, createFlow, loginChallenge, getFlow]);
+        fetchFlow().catch((err) =>
+            console.error("Unhandled error in fetchFlow:", err)
+        );
+    }, [flowId, router, aal, refresh, returnTo, createFlow, loginChallenge, getFlow, flow]);
 
     return (
         <Card className="flex flex-col items-center w-full max-w-sm p-4">
@@ -88,23 +103,20 @@ export default function Login() {
                    alt="Markus Thielker Intranet"/>
             <CardHeader className="flex flex-col items-center text-center space-y-4">
                 {
-                    flow ?
+                    flow ? (
                         <div className="flex flex-col space-y-4">
-                            <CardTitle>{
-                                (() => {
-                                    if (flow?.refresh) {
-                                        return 'Confirm Action';
-                                    } else if (flow?.requested_aal === 'aal2') {
-                                        return 'Two-Factor Authentication';
-                                    }
-                                    return 'Welcome';
-                                })()}
+                            <CardTitle>
+                                {flow.refresh
+                                    ? 'Confirm Action'
+                                    : flow.requested_aal === 'aal2'
+                                        ? 'Two-Factor Authentication'
+                                        : 'Welcome'}
                             </CardTitle>
                             <CardDescription className="max-w-xs">
                                 Log in to the Intranet to access all locally hosted applications.
                             </CardDescription>
                         </div>
-                        :
+                    ) : (
                         <div className="flex flex-col space-y-6">
                             <Skeleton className="h-6 w-full rounded-md"/>
                             <div className="flex flex-col space-y-2">
@@ -112,64 +124,56 @@ export default function Login() {
                                 <Skeleton className="h-3 w-[250px] rounded-md"/>
                             </div>
                         </div>
+                    )
                 }
             </CardHeader>
             <CardContent className="w-full">
-                {
-                    flow
-                        ? <Flow flow={flow} onSubmit={updateFlow}/>
-                        : (
-                            <div className="flex flex-col space-y-4 mt-4">
-                                <div className="flex flex-col space-y-2">
-                                    <Skeleton className="h-3 w-[80px] rounded-md"/>
-                                    <Skeleton className="h-8 w-full rounded-md"/>
-                                </div>
-                                <div className="flex flex-col space-y-2">
-                                    <Skeleton className="h-3 w-[80px] rounded-md"/>
-                                    <Skeleton className="h-8 w-full rounded-md"/>
-                                </div>
-                                <Button disabled>
-                                    <Skeleton className="h-4 w-[80px] rounded-md"/>
-                                </Button>
-                            </div>
-                        )
-                }
-            </CardContent>
-            {
-                flow?.requested_aal === 'aal2' || flow?.requested_aal === 'aal3' || flow?.refresh ? (
-                    <Button onClick={onLogout} variant="link">
-                        Log out
-                    </Button>
+                {flow ? (
+                    <Flow flow={flow} onSubmit={updateFlow}/>
                 ) : (
-                    <div className="flex flex-col">
-                        {
-                            flow ?
-                                <Button variant="link" asChild><Link
-                                    href={{ pathname: '/flow/recovery', query: { return_to: flow.return_to } }}
-                                    className="text-orange-600"
-                                    passHref>
-                                    Forgot your password?
-                                    </Link>
-                                </Button>
-                                :
-                                <Skeleton className="h-3 w-[180px] rounded-md my-3.5"/>
-                        }
-                        {
-                            flow ?
-                                <Button variant="link" asChild disabled={!flow}>
-                                    <Link
-                                        href={{ pathname: '/flow/registration', query: { return_to: flow.return_to } }}
-                                        className="inline-flex space-x-2"
-                                        passHref>
-                                        Create an account
-                                    </Link>
-                                </Button>
-                                :
-                                <Skeleton className="h-3 w-[180px] rounded-md my-3.5"/>
-                        }
+                    <div className="flex flex-col space-y-4 mt-4">
+                        <div className="flex flex-col space-y-2">
+                            <Skeleton className="h-3 w-[80px] rounded-md"/>
+                            <Skeleton className="h-8 w-full rounded-md"/>
+                        </div>
+                        <div className="flex flex-col space-y-2">
+                            <Skeleton className="h-3 w-[80px] rounded-md"/>
+                            <Skeleton className="h-8 w-full rounded-md"/>
+                        </div>
+                        <Button disabled>
+                            <Skeleton className="h-4 w-[80px] rounded-md"/>
+                        </Button>
                     </div>
-                )
-            }
+                )}
+            </CardContent>
+            {flow?.requested_aal === 'aal2' || flow?.requested_aal === 'aal3' || flow?.refresh ? (
+                <Button onClick={onLogout} variant="link">
+                    Log out
+                </Button>
+            ) : (
+                <div className="flex flex-col">
+                    {flow ? (
+                        <Button variant="link" asChild>
+                            <Link href={{ pathname: '/flow/recovery', query: { return_to: flow.return_to } }}
+                                  className="text-orange-600" passHref>
+                                Forgot your password?
+                            </Link>
+                        </Button>
+                    ) : (
+                        <Skeleton className="h-3 w-[180px] rounded-md my-3.5"/>
+                    )}
+                    {flow ? (
+                        <Button variant="link" asChild disabled={!flow}>
+                            <Link href={{ pathname: '/flow/registration', query: { return_to: flow.return_to } }}
+                                  className="inline-flex space-x-2" passHref>
+                                Create an account
+                            </Link>
+                        </Button>
+                    ) : (
+                        <Skeleton className="h-3 w-[180px] rounded-md my-3.5"/>
+                    )}
+                </div>
+            )}
         </Card>
     );
 }
