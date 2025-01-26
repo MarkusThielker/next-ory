@@ -13,15 +13,15 @@ import { Button } from '@/components/ui/button';
 
 interface ConsentFormProps {
     request: OAuth2ConsentRequest;
-    onAccept: (challenge: string, scopes: string[], remember: boolean) => void;
-    onReject: (challenge: string) => void;
+    onAcceptAction: (challenge: string, scopes: string[], remember: boolean) => void;
+    onRejectAction: (challenge: string) => void;
 }
 
 export default function ConsentForm(
     {
         request,
-        onAccept,
-        onReject,
+        onAcceptAction,
+        onRejectAction,
     }: ConsentFormProps,
 ) {
 
@@ -37,7 +37,7 @@ export default function ConsentForm(
             .toSession()
             .then(({ data }) => setSession(data))
             .catch(() => router.push('/flow/login'));
-    }, []);
+    }, [router]);
 
     return (
         <>
@@ -106,12 +106,12 @@ export default function ConsentForm(
             <CardFooter className="flex w-full space-x-2 justify-end">
                 <Button
                     variant="outline"
-                    onClick={() => onReject(request.challenge)}>
+                    onClick={() => onRejectAction(request.challenge)}>
                     Reject
                 </Button>
                 <Button
                     variant="default"
-                    onClick={() => onAccept(request.challenge, requestedScopes, remember)}>
+                    onClick={() => onAcceptAction(request.challenge, requestedScopes, remember)}>
                     Accept
                 </Button>
             </CardFooter>
