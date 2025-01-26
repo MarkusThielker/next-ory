@@ -181,7 +181,7 @@ export function LogoutLink(deps?: DependencyList) {
                 // Something else happened!
                 return Promise.reject(err);
             });
-    }, deps);
+    }, [deps]);
 
     return () => {
         if (logoutToken) {
