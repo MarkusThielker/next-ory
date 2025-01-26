@@ -83,8 +83,8 @@ export default async function Consent(props: { searchParams: Promise<{ consent_c
         <Card className="flex flex-col items-center w-full max-w-sm p-4">
             <ConsentForm
                 request={consentRequest}
-                onAccept={onAccept}
-                onReject={onReject}/>
+                onAcceptAction={onAccept}
+                onRejectAction={onReject}/>
         </Card>
     );
 }
