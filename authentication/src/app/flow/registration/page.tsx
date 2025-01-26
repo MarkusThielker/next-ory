@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {Suspense, useCallback, useEffect, useState} from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Flow, HandleError, kratos } from '@/ory';
 import Link from 'next/link';
@@ -11,7 +11,15 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 
-export default function Registration() {
+export default function RegistrationPage() {
+    return (
+        <Suspense>
+            <Registration />
+        </Suspense>
+    )
+}
+
+function Registration() {
 
     const [flow, setFlow] = useState<RegistrationFlow>();
 
@@ -31,7 +39,7 @@ export default function Registration() {
     const handleError = useCallback((error: AxiosError) => {
         const handle = HandleError(getFlow, setFlow, '/flow/registration', true, router);
         return handle(error);
-    }, [getFlow]);
+    }, [getFlow, router]);
 
     const createFlow = useCallback((returnTo: string | undefined) => {
         kratos
@@ -65,19 +73,29 @@ export default function Registration() {
     };
 
     useEffect(() => {
+        const fetchFlow = async () => {
+            if (flow) {
+                return;
+            }
 
-        if (flow) {
-            return;
-        }
+            try {
+                if (flowId) {
+                    await getFlow(flowId);
+                    return;
+                }
 
-        if (flowId) {
-            getFlow(flowId);
-            return;
-        }
+                createFlow(returnTo);
+            } catch (err) {
+                console.error("Error in registration flow:", err);
+            }
+        };
 
-        createFlow(returnTo);
+        fetchFlow().catch((err) =>
+            console.error("Unhandled error in fetchFlow:", err)
+        );
+    }, [flowId, returnTo, flow, getFlow, createFlow]);
 
-    }, [flowId, router, returnTo, flow]);
+
 
     return (
         <Card className="flex flex-col items-center w-full max-w-sm p-4">
