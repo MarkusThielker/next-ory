@@ -126,7 +126,7 @@ export async function getRelationshipApi() {
 
 const permissionApi = new PermissionApi(new Configuration(
     {
-        basePath: process.env.ORY_KETO_ADMIN_URL,
+        basePath: process.env.NEXT_PUBLIC_ORY_KETO_URL,
         baseOptions: {
             withCredentials: true,
         },
@@ -144,7 +144,7 @@ export async function getPermissionApi() {
 
 const ketoMetadataApi = new MetadataApi(new Configuration(
     {
-        basePath: process.env.ORY_KETO_ADMIN_URL,
+        basePath: process.env.NEXT_PUBLIC_ORY_KETO_URL,
         baseOptions: {
             withCredentials: true,
         },
