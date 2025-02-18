@@ -1,3 +1,6 @@
+import { CreateClientForm } from '@/components/forms/client-form';
+import { createClient } from '@/lib/action/client';
+
 export default async function CreateClientPage() {
     return (
         <div className="space-y-4">
@@ -7,6 +10,7 @@ export default async function CreateClientPage() {
                     Configure your new OAuth2 Client.
                 </p>
             </div>
+            <CreateClientForm action={createClient}/>
         </div>
     );
 }
