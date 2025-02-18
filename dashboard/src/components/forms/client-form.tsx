@@ -14,6 +14,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle } 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Minus } from 'lucide-react';
 
 interface CreateClientFormProps {
     action: (data: z.infer<typeof clientFormSchema>) => Promise<AxiosResponse<OAuth2Client, any>>;
@@ -22,17 +23,19 @@ interface CreateClientFormProps {
 export function CreateClientForm({ action }: CreateClientFormProps) {
 
     const router = useRouter();
+    const [redirectUris, setRedirectUris] = useState<string[]>(['']);
 
     const form = useForm<z.infer<typeof clientFormSchema>>({
         resolver: zodResolver(clientFormSchema),
         defaultValues: {
             client_name: '',
-            owner: '',
             scope: '',
+            redirect_uris: [''],
             skip: false,
             logo_uri: '',
             policy_uri: '',
             tos_uri: '',
+            owner: '',
         },
     });
 
@@ -51,6 +54,23 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
             .catch((error) => {
                 console.error(error);
             });
+    };
+
+    const addRedirectUri = () => {
+        setRedirectUris([...redirectUris, '']);
+    };
+
+    const removeRedirectUri = (index) => {
+        const updatedRedirectUris = redirectUris.filter((_, i) => i !== index);
+        setRedirectUris(updatedRedirectUris);
+        form.setValue('redirect_uris', updatedRedirectUris);
+    };
+
+    const handleInputChange = (index, event) => {
+        const updatedRedirectUris = [...redirectUris];
+        updatedRedirectUris[index] = event.target.value;
+        setRedirectUris(updatedRedirectUris);
+        form.setValue('redirect_uris', updatedRedirectUris);
     };
 
     return (
@@ -117,27 +137,44 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                     </FormItem>
                                 )}
                             />
-                            <FormField
-                                control={form.control}
-                                name="scope"
-                                render={({ field }) => (
+                            {redirectUris.map((uri, index) => (
+                                <div key={index} className="mb-4">
                                     <FormItem>
-                                        <FormLabel>Scopes</FormLabel>
+                                        <FormLabel htmlFor={`redirect_uri-${index}`}>Redirect
+                                            URI {index + 1}</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="post:read post:write user:read" {...field} />
+                                            <div className="relative">
+                                                <Input
+                                                    type="text"
+                                                    id={`redirect_uri-${index}`}
+                                                    value={uri}
+                                                    placeholder="https://"
+                                                    className="pr-10"
+                                                    {...form.register(`redirect_uris.${index}`)}
+                                                    onChange={(event) => handleInputChange(index, event)}
+                                                />
+                                                {redirectUris.length > 1 && (
+                                                    <Button
+                                                        type="button"
+                                                        size="icon"
+                                                        variant="destructive"
+                                                        className="absolute inset-y-0 right-0 rounded-l-none"
+                                                        onClick={() => removeRedirectUri(index)}>
+                                                        <Minus/>
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </FormControl>
-                                        <FormDescription>
-                                            Scope is a string containing a space-separated list of scope values (as
-                                            described in
-                                            Section 3.3 of OAuth 2.0 [RFC6749]) that the client can use when
-                                            requesting
-                                            access
-                                            tokens.
-                                        </FormDescription>
-                                        <FormMessage/>
+                                        {form.errors?.redirect_uris && form.errors.redirect_uris[index] && (
+                                            <FormMessage>{form.errors.redirect_uris[index].message}</FormMessage>
+                                        )}
                                     </FormItem>
-                                )}
-                            />
+                                </div>
+                            ))}
+
+                            <Button type="button" onClick={addRedirectUri}>
+                                Add Redirect URI
+                            </Button>
                         </CardContent>
                     </Card>
 
@@ -162,6 +199,7 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                             </FormDescription>
                                         </div>
                                         <FormControl>
+                                            {/* TODO: change to switch */}
                                             <Checkbox
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange}
@@ -252,6 +290,20 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                     </>
                                 )
                             }
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>
+                                Supported OAuth2 flows
+                            </CardTitle>
+                            <CardDescription>
+                                Configure allowed grant types and response types for this OAuth2 Client.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+
                         </CardContent>
                     </Card>
 
