@@ -10,4 +10,7 @@ export const clientFormSchema = z.object({
     tos_uri: z.string().url(),
     policy_uri: z.string().url(),
     owner: z.string().min(1, 'Owner is required'),
+    grant_types: z.array(z.string()),
+    response_types: z.array(z.string()),
+    token_endpoint_auth_method: z.string(),
 });

@@ -302,8 +302,42 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                 Configure allowed grant types and response types for this OAuth2 Client.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent>
-
+                        <CardContent className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="grant_types"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Grant types</FormLabel>
+                                        <FormControl>
+                                            {/* TODO: add multiselect component */}
+                                            <Input value="TODO: add multiselect component" readOnly disabled/>
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="response_types"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Response types</FormLabel>
+                                        <FormControl>
+                                            {/* TODO: add multiselect component */}
+                                            <Input value="TODO: add multiselect component" readOnly disabled/>
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormItem>
+                                <FormLabel>Access token type</FormLabel>
+                                <FormControl>
+                                    <Input value="opaque" readOnly disabled/>
+                                </FormControl>
+                                <FormMessage/>
+                            </FormItem>
                         </CardContent>
                     </Card>
 
