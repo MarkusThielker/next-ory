@@ -7,12 +7,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { kratos } from '@/ory';
-import { useEffect, useState } from 'react';
-import { Identity, OAuth2Client } from '@ory/client';
+import { useState } from 'react';
+import { OAuth2Client } from '@ory/client';
 import { AxiosResponse } from 'axios';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -23,13 +22,6 @@ interface CreateClientFormProps {
 export function CreateClientForm({ action }: CreateClientFormProps) {
 
     const router = useRouter();
-    const [identity, setIdentity] = useState<Identity | undefined>();
-
-    useEffect(() => {
-        kratos.toSession()
-            .then(response => response.data)
-            .then(session => setIdentity(session.identity));
-    }, []);
 
     const form = useForm<z.infer<typeof clientFormSchema>>({
         resolver: zodResolver(clientFormSchema),
@@ -60,10 +52,6 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                 console.error(error);
             });
     };
-
-    useEffect(() => {
-        form.setValue('owner', identity?.id ?? '');
-    }, [identity]);
 
     return (
         <>
@@ -180,7 +168,8 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                             />
                                         </FormControl>
                                     </FormItem>
-                                )}/>
+                                )}
+                            />
                             {
                                 !form.getValues('skip') && (
                                     <>
@@ -199,7 +188,8 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                                     </FormDescription>
                                                     <FormMessage/>
                                                 </FormItem>
-                                            )}/>
+                                            )}
+                                        />
 
                                         <FormField
                                             control={form.control}
@@ -219,7 +209,8 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                                     </FormDescription>
                                                     <FormMessage/>
                                                 </FormItem>
-                                            )}/>
+                                            )}
+                                        />
 
                                         <FormField
                                             control={form.control}
@@ -239,7 +230,8 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                                     </FormDescription>
                                                     <FormMessage/>
                                                 </FormItem>
-                                            )}/>
+                                            )}
+                                        />
 
                                         <FormField
                                             control={form.control}
@@ -248,7 +240,7 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                                 <FormItem>
                                                     <FormLabel>Owner</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Identity ID" {...field} />
+                                                        <Input placeholder="ACME INC" {...field} />
                                                     </FormControl>
                                                     <FormDescription>
                                                         Owner is a string identifying the owner of the OAuth 2.0 Client.
