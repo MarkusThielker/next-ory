@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useRouter } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Minus } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface CreateClientFormProps {
     action: (data: z.infer<typeof clientFormSchema>) => Promise<AxiosResponse<OAuth2Client, any>>;
@@ -60,13 +61,13 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
         setRedirectUris([...redirectUris, '']);
     };
 
-    const removeRedirectUri = (index) => {
+    const removeRedirectUri = (index: number) => {
         const updatedRedirectUris = redirectUris.filter((_, i) => i !== index);
         setRedirectUris(updatedRedirectUris);
         form.setValue('redirect_uris', updatedRedirectUris);
     };
 
-    const handleInputChange = (index, event) => {
+    const handleInputChange = (index: number, event: any) => {
         const updatedRedirectUris = [...redirectUris];
         updatedRedirectUris[index] = event.target.value;
         setRedirectUris(updatedRedirectUris);
@@ -165,8 +166,8 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                                 )}
                                             </div>
                                         </FormControl>
-                                        {form.errors?.redirect_uris && form.errors.redirect_uris[index] && (
-                                            <FormMessage>{form.errors.redirect_uris[index].message}</FormMessage>
+                                        {form.formState.errors?.redirect_uris && form.formState.errors.redirect_uris[index] && (
+                                            <FormMessage>{form.formState.errors.redirect_uris[index].message}</FormMessage>
                                         )}
                                     </FormItem>
                                 </div>
@@ -338,6 +339,50 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                 </FormControl>
                                 <FormMessage/>
                             </FormItem>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>
+                                Client authentication mechanism
+                            </CardTitle>
+                            <CardDescription>
+                                Set the client authentication method for the token endpoint. By default the client
+                                credentials must be sent in the body of an HTTP POST. This option can also specify for
+                                sending the credentials encoded in the HTTP Authorization header or by using JSON Web
+                                Tokens. Specify none for public clients (native apps, mobile apps) which can not have
+                                secrets.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="token_endpoint_auth_method"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Authentication method</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select an authentication mechanism"/>
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="client_secret_post">HTTP Body <span
+                                                    className="text-sm text-gray-500 ml-2">(client_secret_post)</span></SelectItem>
+                                                <SelectItem value="client_secret_basic">HTTP Basic Authorization<span
+                                                    className="text-sm text-gray-500 ml-2">(client_secret_basic)</span></SelectItem>
+                                                <SelectItem value="private_key_jwt">JWT Authentication <span
+                                                    className="text-sm text-gray-500 ml-2">(private_key_jwt)</span></SelectItem>
+                                                <SelectItem value="none">None <span
+                                                    className="text-sm text-gray-500 ml-2">(none)</span></SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
                         </CardContent>
                     </Card>
 

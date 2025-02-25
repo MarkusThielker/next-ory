@@ -13,4 +13,5 @@ export const clientFormSchema = z.object({
     grant_types: z.array(z.string()),
     response_types: z.array(z.string()),
     token_endpoint_auth_method: z.string(),
+
 });
