@@ -13,9 +13,10 @@ import { AxiosResponse } from 'axios';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Minus } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import Link from 'next/link';
 
 interface CreateClientFormProps {
     action: (data: z.infer<typeof clientFormSchema>) => Promise<AxiosResponse<OAuth2Client, any>>;
@@ -200,8 +201,7 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                             </FormDescription>
                                         </div>
                                         <FormControl>
-                                            {/* TODO: change to switch */}
-                                            <Checkbox
+                                            <Switch
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange}
                                             />
@@ -238,7 +238,9 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                                     <FormLabel>Policy URI</FormLabel>
                                                     <FormControl>
                                                         <Input
-                                                            placeholder="https://myapp.example/privacy_policy" {...field} />
+                                                            placeholder="https://myapp.example/privacy_policy"
+                                                            {...field}
+                                                        />
                                                     </FormControl>
                                                     <FormDescription>
                                                         A URL string pointing to a human-readable
