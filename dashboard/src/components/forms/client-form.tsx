@@ -106,14 +106,13 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Client Name</FormLabel>
+                                        <FormDescription>
+                                            The human-readable name of the client to be presented to the end-user during
+                                            authorization.
+                                        </FormDescription>
                                         <FormControl>
                                             <Input placeholder="ACME INC SSO" {...field} />
                                         </FormControl>
-                                        <FormDescription>
-                                            The human-readable name of the client to be presented to the end-user
-                                            during
-                                            authorization.
-                                        </FormDescription>
                                         <FormMessage/>
                                     </FormItem>
                                 )}
@@ -124,17 +123,14 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Scopes</FormLabel>
+                                        <FormDescription>
+                                            Scope is a string containing a space-separated list of scope values (as
+                                            described in Section 3.3 of OAuth 2.0 [RFC6749]) that the client can use
+                                            when requesting access tokens.
+                                        </FormDescription>
                                         <FormControl>
                                             <Input placeholder="post:read post:write user:read" {...field} />
                                         </FormControl>
-                                        <FormDescription>
-                                            Scope is a string containing a space-separated list of scope values (as
-                                            described in
-                                            Section 3.3 of OAuth 2.0 [RFC6749]) that the client can use when
-                                            requesting
-                                            access
-                                            tokens.
-                                        </FormDescription>
                                         <FormMessage/>
                                     </FormItem>
                                 )}
@@ -218,13 +214,13 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Logo URI</FormLabel>
+                                                    <FormDescription>
+                                                        A URL string referencing the client's logo.
+                                                    </FormDescription>
                                                     <FormControl>
                                                         <Input
                                                             placeholder="https://myapp.example/logo.png" {...field} />
                                                     </FormControl>
-                                                    <FormDescription>
-                                                        A URL string referencing the client's logo.
-                                                    </FormDescription>
                                                     <FormMessage/>
                                                 </FormItem>
                                             )}
@@ -236,18 +232,18 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Policy URI</FormLabel>
+                                                    <FormDescription>
+                                                        A URL string pointing to a human-readable privacy policy
+                                                        document
+                                                        for the client that describes how the deployment organization
+                                                        collects, uses, retains, and discloses personal data.
+                                                    </FormDescription>
                                                     <FormControl>
                                                         <Input
                                                             placeholder="https://myapp.example/privacy_policy"
                                                             {...field}
                                                         />
                                                     </FormControl>
-                                                    <FormDescription>
-                                                        A URL string pointing to a human-readable
-                                                        privacy policy document for the client that describes how the
-                                                        deployment organization collects, uses, retains, and discloses
-                                                        personal data.
-                                                    </FormDescription>
                                                     <FormMessage/>
                                                 </FormItem>
                                             )}
@@ -259,16 +255,16 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Terms URI</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder="https://myapp.example/terms_of_service" {...field} />
-                                                    </FormControl>
                                                     <FormDescription>
                                                         A URL string pointing to a human-readable terms of service
                                                         document for the client that describes a contractual
                                                         relationship between the end-user and the client that the
                                                         end-user accepts when authorizing the client.
                                                     </FormDescription>
+                                                    <FormControl>
+                                                        <Input
+                                                            placeholder="https://myapp.example/terms_of_service" {...field} />
+                                                    </FormControl>
                                                     <FormMessage/>
                                                 </FormItem>
                                             )}
@@ -280,12 +276,12 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Owner</FormLabel>
-                                                    <FormControl>
-                                                        <Input placeholder="ACME INC" {...field} />
-                                                    </FormControl>
                                                     <FormDescription>
                                                         Owner is a string identifying the owner of the OAuth 2.0 Client.
                                                     </FormDescription>
+                                                    <FormControl>
+                                                        <Input placeholder="ACME INC" {...field} />
+                                                    </FormControl>
                                                     <FormMessage/>
                                                 </FormItem>
                                             )}
