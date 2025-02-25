@@ -13,5 +13,10 @@ export const clientFormSchema = z.object({
     grant_types: z.array(z.string()),
     response_types: z.array(z.string()),
     token_endpoint_auth_method: z.string(),
-
+    backchannel_logout_session_required: z.boolean().default(false),
+    backchannel_logout_uri: z.string().url(),
+    frontchannel_logout_session_required: z.boolean().default(false),
+    frontchannel_logout_uri: z.string().url(),
+    skip_logout_consent: z.boolean().default(false),
+    post_logout_redirect_uris: z.array(z.string().url({ message: 'Invalid URL' })).min(1, { message: 'At least one redirect URI is required' }),
 });

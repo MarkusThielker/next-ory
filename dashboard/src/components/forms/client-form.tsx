@@ -25,7 +25,9 @@ interface CreateClientFormProps {
 export function CreateClientForm({ action }: CreateClientFormProps) {
 
     const router = useRouter();
+
     const [redirectUris, setRedirectUris] = useState<string[]>(['']);
+    const [postLogoutRedirectUris, setPostLogoutRedirectUris] = useState<string[]>(['']);
 
     const form = useForm<z.infer<typeof clientFormSchema>>({
         resolver: zodResolver(clientFormSchema),
@@ -62,10 +64,20 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
         setRedirectUris([...redirectUris, '']);
     };
 
+    const addPostLogoutRedirectUri = () => {
+        setPostLogoutRedirectUris([...postLogoutRedirectUris, '']);
+    };
+
     const removeRedirectUri = (index: number) => {
         const updatedRedirectUris = redirectUris.filter((_, i) => i !== index);
         setRedirectUris(updatedRedirectUris);
         form.setValue('redirect_uris', updatedRedirectUris);
+    };
+
+    const removePostLogoutRedirectUri = (index: number) => {
+        const updatedPostLogoutRedirectUris = postLogoutRedirectUris.filter((_, i) => i !== index);
+        setPostLogoutRedirectUris(postLogoutRedirectUris);
+        form.setValue('post_logout_redirect_uris', updatedPostLogoutRedirectUris);
     };
 
     const handleInputChange = (index: number, event: any) => {
@@ -73,6 +85,13 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
         updatedRedirectUris[index] = event.target.value;
         setRedirectUris(updatedRedirectUris);
         form.setValue('redirect_uris', updatedRedirectUris);
+    };
+
+    const handlePostLogoutInputChange = (index: number, event: any) => {
+        const updatedPostLogoutRedirectUris = [...postLogoutRedirectUris];
+        updatedPostLogoutRedirectUris[index] = event.target.value;
+        setPostLogoutRedirectUris(updatedPostLogoutRedirectUris);
+        form.setValue('post_logout_redirect_uris', updatedPostLogoutRedirectUris);
     };
 
     return (
@@ -381,6 +400,178 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                     </FormItem>
                                 )}
                             />
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>
+                                OpenID Connect logout
+                            </CardTitle>
+                            <CardDescription>
+                                Get more information about using front and backchannels here&nbsp;
+                                <Button variant="link" className="p-0" asChild>
+                                    <Link target="_blank"
+                                          href="https://www.ory.sh/docs/oauth2-oidc/oidc-logout#openid-connect-front-channel-logout-10">
+                                        documentation
+                                    </Link>
+                                </Button>.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="frontchannel_logout_session_required"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg">
+                                        <div className="space-y-0.5">
+                                            <FormLabel className="text-base">
+                                                Frontchannel Logout Session Required
+                                            </FormLabel>
+                                            <FormDescription>
+                                                Boolean value specifying whether the Relay Party (RP) requires that
+                                                issuer and session ID query parameters be included to identify the RP
+                                                session with the OpenID provider (OP) when the Frontchannel Logout URI
+                                                is used. The default value is false.
+                                            </FormDescription>
+                                        </div>
+                                        <FormControl>
+                                            <Switch
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="frontchannel_logout_uri"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Frontchannel Logout URI</FormLabel>
+                                        <FormDescription>
+                                            URL that will cause the Relying Party (RP) to log itself out when rendered
+                                            in an iframe by the OpenID provider (OP). An issuer query parameter and a
+                                            session ID query parameter MAY be included by the OpenID provider (OP) to
+                                            enable the Relying Party (RP) to validate the request and to determine which
+                                            of the potentially multiple sessions is to be logged out; if either is
+                                            included, both MUST be.
+                                        </FormDescription>
+                                        <FormControl>
+                                            <Input placeholder="https://" {...field} />
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="backchannel_logout_session_required"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg">
+                                        <div className="space-y-0.5">
+                                            <FormLabel className="text-base">
+                                                Backchannel Logout Session Required
+                                            </FormLabel>
+                                            <FormDescription>
+                                                Boolean value specifying whether the Relying Party (RP) requires that a
+                                                session ID Claim be included in the Logout Token to identify the Relying
+                                                Party session with the OpenID provider (OP) when the Backchannel Logout
+                                                URI is used. If omitted, the default value is false.
+                                            </FormDescription>
+                                        </div>
+                                        <FormControl>
+                                            <Switch
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="backchannel_logout_uri"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Backchannel Logout URI</FormLabel>
+                                        <FormDescription>
+                                            URL that will cause the Relying Party (RP) to log itself out when rendered
+                                            in an iframe by the OpenID provider (OP). An issuer query parameter and a
+                                            session ID query parameter MAY be included by the OpenID provider (OP) to
+                                            enable the Relying Party (RP) to validate the request and to determine which
+                                            of the potentially multiple sessions is to be logged out; if either is
+                                            included, both MUST be.
+                                        </FormDescription>
+                                        <FormControl>
+                                            <Input placeholder="https://" {...field} />
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="skip_logout_consent"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg">
+                                        <div className="space-y-0.5">
+                                            <FormLabel className="text-base">
+                                                Skip logout consent
+                                            </FormLabel>
+                                            <FormDescription>
+                                                Boolean value specifying whether the additional logout consent screen
+                                                should be skipped.
+                                            </FormDescription>
+                                        </div>
+                                        <FormControl>
+                                            <Switch
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            {postLogoutRedirectUris.map((uri, index) => (
+                                <div key={index} className="mb-4">
+                                    <FormItem>
+                                        <FormLabel htmlFor={`post_logout_redirect_uri-${index}`}>
+                                            Post Logout Redirect URI {index + 1}</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Input
+                                                    type="text"
+                                                    id={`post_logout_redirect_uri-${index}`}
+                                                    value={uri}
+                                                    placeholder="https://"
+                                                    className="pr-10"
+                                                    {...form.register(`post_logout_redirect_uris.${index}`)}
+                                                    onChange={(event) => handlePostLogoutInputChange(index, event)}
+                                                />
+                                                {postLogoutRedirectUris.length > 1 && (
+                                                    <Button
+                                                        type="button"
+                                                        size="icon"
+                                                        variant="destructive"
+                                                        className="absolute inset-y-0 right-0 rounded-l-none"
+                                                        onClick={() => removePostLogoutRedirectUri(index)}>
+                                                        <Minus/>
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </FormControl>
+                                        {form.formState.errors?.post_logout_redirect_uris && form.formState.errors.post_logout_redirect_uris[index] && (
+                                            <FormMessage>{form.formState.errors.post_logout_redirect_uris[index].message}</FormMessage>
+                                        )}
+                                    </FormItem>
+                                </div>
+                            ))}
+
+                            <Button type="button" onClick={addPostLogoutRedirectUri}>
+                                Add Post Logout Redirect URI
+                            </Button>
                         </CardContent>
                     </Card>
 
