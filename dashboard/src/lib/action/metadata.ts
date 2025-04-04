@@ -3,11 +3,12 @@
 import { getHydraMetadataApi, getKetoMetadataApi, getKratosMetadataApi } from '@/ory/sdk/server';
 import { MetadataApiReady } from '@/components/status-card';
 import { checkPermission, requireSession } from '@/lib/action/authentication';
+import { permission, relation } from '@/lib/permission';
 
 export async function kratosMetadata() {
 
     const session = await requireSession();
-    const allowed = await checkPermission('admin.stack.status', 'access', session.identity!.id);
+    const allowed = await checkPermission(permission.stack.status, relation.access, session.identity!.id);
     if (!allowed) {
         return;
     }
@@ -33,7 +34,7 @@ export async function kratosMetadata() {
 export async function hydraMetadata() {
 
     const session = await requireSession();
-    const allowed = await checkPermission('admin.stack.status', 'access', session.identity!.id);
+    const allowed = await checkPermission(permission.stack.status, relation.access, session.identity!.id);
     if (!allowed) {
         return;
     }
@@ -59,7 +60,7 @@ export async function hydraMetadata() {
 export async function ketoMetadata() {
 
     const session = await requireSession();
-    const allowed = await checkPermission('admin.stack.status', 'access', session.identity!.id);
+    const allowed = await checkPermission(permission.stack.status, relation.access, session.identity!.id);
     if (!allowed) {
         return;
     }
