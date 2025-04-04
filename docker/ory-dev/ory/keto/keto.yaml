@@ -22,6 +22,8 @@ dsn: postgres://postgres:postgres@ory-postgres:5432/keto?sslmode=disable&max_con
 namespaces:
   - id: 0
     name: roles
+  - id: 1
+    name: permissions
 
 serve:
   read:
