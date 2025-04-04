@@ -3,8 +3,9 @@ import { IdentityDataTable } from '@/app/(inside)/user/data-table';
 import { SearchInput } from '@/components/search-input';
 import { queryIdentities } from '@/lib/action/identity';
 import { IdentityPagination } from '@/components/pagination';
-import { checkPermission, requireRole, requireSession } from '@/lib/action/authentication';
+import { checkPermission, requirePermission, requireSession } from '@/lib/action/authentication';
 import InsufficientPermission from '@/components/insufficient-permission';
+import { permission, relation } from '@/lib/permission';
 
 export default async function UserPage(
     {
@@ -17,7 +18,7 @@ export default async function UserPage(
     const session = await requireSession();
     const identityId = session.identity!.id;
 
-    await requireRole('admin', identityId);
+    await requirePermission(permission.stack.dashboard, relation.access, identityId);
 
     const pmAccessUser = await checkPermission(permission.user.it, relation.access, identityId);
     const pmEditUser = await checkPermission(permission.user.it, relation.edit, identityId);
