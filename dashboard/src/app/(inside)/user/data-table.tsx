@@ -33,9 +33,16 @@ interface IdentityDataTableProps {
     data: Identity[];
     page: number;
     query: string;
+    permission: {
+        pmEditUser: boolean;
+        pmBlockUser: boolean;
+        pmUnblockUser: boolean;
+        pmDeleteUser: boolean;
+        pmDeleteUserSession: boolean;
+    };
 }
 
-export function IdentityDataTable({ data, page, query }: IdentityDataTableProps) {
+export function IdentityDataTable({ data, page, query, permission }: IdentityDataTableProps) {
 
     const columns: ColumnDef<Identity>[] = [
         {
@@ -137,6 +144,7 @@ export function IdentityDataTable({ data, page, query }: IdentityDataTableProps)
                                     setCurrentIdentity(identity);
                                     setIdentitySessionVisible(true);
                                 }}
+                                disabled={!permission.pmDeleteUserSession}
                                 className="flex items-center space-x-2 text-red-500">
                                 <UserMinus className="h-4 w-4"/>
                                 <span>Delete sessions</span>
@@ -148,6 +156,7 @@ export function IdentityDataTable({ data, page, query }: IdentityDataTableProps)
                                         setCurrentIdentity(identity);
                                         setBlockIdentityVisible(true);
                                     }}
+                                    disabled={!permission.pmBlockUser}
                                     className="flex items-center space-x-2 text-red-500">
                                     <UserX className="h-4 w-4"/>
                                     <span>Block identity</span>
@@ -160,6 +169,7 @@ export function IdentityDataTable({ data, page, query }: IdentityDataTableProps)
                                         setCurrentIdentity(identity);
                                         setUnblockIdentityVisible(true);
                                     }}
+                                    disabled={!permission.pmUnblockUser}
                                     className="flex items-center space-x-2 text-red-500">
                                     <UserCheck className="h-4 w-4"/>
                                     <span>Unblock identity</span>
@@ -170,6 +180,7 @@ export function IdentityDataTable({ data, page, query }: IdentityDataTableProps)
                                     setCurrentIdentity(identity);
                                     setDeleteIdentityVisible(true);
                                 }}
+                                disabled={!permission.pmDeleteUser}
                                 className="flex items-center space-x-2 text-red-500">
                                 <Trash className="h-4 w-4"/>
                                 <span>Delete identity</span>

@@ -3,6 +3,8 @@ import { IdentityDataTable } from '@/app/(inside)/user/data-table';
 import { SearchInput } from '@/components/search-input';
 import { queryIdentities } from '@/lib/action/identity';
 import { IdentityPagination } from '@/components/pagination';
+import { checkPermission, requireRole, requireSession } from '@/lib/action/authentication';
+import InsufficientPermission from '@/components/insufficient-permission';
 
 export default async function UserPage(
     {
@@ -12,6 +14,18 @@ export default async function UserPage(
     },
 ) {
 
+    const session = await requireSession();
+    const identityId = session.identity!.id;
+
+    await requireRole('admin', identityId);
+
+    const pmAccessUser = await checkPermission('admin.user', 'access', identityId);
+    const pmEditUser = await checkPermission('admin.user', 'edit', identityId);
+    const pmBlockUser = await checkPermission('admin.user', 'block', identityId);
+    const pmUnblockUser = await checkPermission('admin.user', 'unblock', identityId);
+    const pmDeleteUser = await checkPermission('admin.user', 'delete', identityId);
+    const pmDeleteUserSession = await checkPermission('admin.user.session', 'delete', identityId);
+
     const params = await searchParams;
 
     const page = params.page ? Number(params.page) : 1;
@@ -20,7 +34,7 @@ export default async function UserPage(
     let pageSize = 50;
     let paginationRange = 11;
 
-    const { data, itemCount, pageCount } = await queryIdentities({ page, pageSize, query });
+    const users = pmAccessUser && await queryIdentities({ page, pageSize, query });
 
     return (
         <div className="space-y-4">
@@ -31,23 +45,46 @@ export default async function UserPage(
                 </p>
             </div>
             <div className="space-y-2">
-                <SearchInput
-                    value={query}
-                    pageParamKey="page"
-                    queryParamKey="query"
-                    placeholder="Search for addresses and traits"/>
-                <div>
-                    <p className="text-xs text-neutral-500">{itemCount} item{itemCount && itemCount > 1 ? 's' : ''} found</p>
-                    <IdentityDataTable
-                        data={data}
-                        page={page}
-                        query={query}/>
-                </div>
-                <IdentityPagination
-                    page={page}
-                    pageCount={pageCount}
-                    pageParamKey="page"
-                    paginationRange={paginationRange}/>
+                {
+                    !pmAccessUser && (
+                        <InsufficientPermission
+                            permission="admin.user"
+                            relation="see"
+                            identityId={identityId}
+                        />
+                    )
+                }
+                {
+                    pmAccessUser && users && (
+                        <>
+                            <SearchInput
+                                value={query}
+                                pageParamKey="page"
+                                queryParamKey="query"
+                                placeholder="Search for addresses and traits"/>
+                            <div>
+                                <p className="text-xs text-neutral-500">{users.itemCount} item{users.itemCount && users.itemCount > 1 ? 's' : ''} found</p>
+                                <IdentityDataTable
+                                    data={users.data}
+                                    page={page}
+                                    query={query}
+                                    permission={{
+                                        pmEditUser: pmEditUser,
+                                        pmBlockUser: pmBlockUser,
+                                        pmUnblockUser: pmUnblockUser,
+                                        pmDeleteUser: pmDeleteUser,
+                                        pmDeleteUserSession: pmDeleteUserSession,
+                                    }}
+                                />
+                            </div>
+                            <IdentityPagination
+                                page={page}
+                                pageCount={users.pageCount}
+                                pageParamKey="page"
+                                paginationRange={paginationRange}/>
+                        </>
+                    )
+                }
             </div>
         </div>
     );
