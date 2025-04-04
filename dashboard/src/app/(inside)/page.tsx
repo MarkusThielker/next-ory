@@ -10,7 +10,7 @@ export default async function RootPage() {
 
     await requireRole('admin', identityId);
 
-    const pmAccessStackStatus = await checkPermission('admin.stack.status', 'access', identityId);
+    const pmAccessStackStatus = await checkPermission(permission.stack.status, relation.access, identityId);
 
     const kratos = pmAccessStackStatus && await kratosMetadata();
     const hydra = pmAccessStackStatus && await hydraMetadata();
@@ -26,7 +26,7 @@ export default async function RootPage() {
                 {
                     !pmAccessStackStatus && (
                         <InsufficientPermission
-                            permission="admin.stack.status"
+                            permission={permission.stack.status}
                             relation="access"
                             identityId={identityId}
                             classNames="col-span-1 md:col-span-4"

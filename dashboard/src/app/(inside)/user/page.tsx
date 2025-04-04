@@ -19,12 +19,11 @@ export default async function UserPage(
 
     await requireRole('admin', identityId);
 
-    const pmAccessUser = await checkPermission('admin.user', 'access', identityId);
-    const pmEditUser = await checkPermission('admin.user', 'edit', identityId);
-    const pmBlockUser = await checkPermission('admin.user', 'block', identityId);
-    const pmUnblockUser = await checkPermission('admin.user', 'unblock', identityId);
-    const pmDeleteUser = await checkPermission('admin.user', 'delete', identityId);
-    const pmDeleteUserSession = await checkPermission('admin.user.session', 'delete', identityId);
+    const pmAccessUser = await checkPermission(permission.user.it, relation.access, identityId);
+    const pmEditUser = await checkPermission(permission.user.it, relation.edit, identityId);
+    const pmDeleteUser = await checkPermission(permission.user.it, relation.delete, identityId);
+    const pmEditUserState = await checkPermission(permission.user.state, relation.edit, identityId);
+    const pmDeleteUserSession = await checkPermission(permission.user.session, relation.delete, identityId);
 
     const params = await searchParams;
 
@@ -48,8 +47,8 @@ export default async function UserPage(
                 {
                     !pmAccessUser && (
                         <InsufficientPermission
-                            permission="admin.user"
-                            relation="see"
+                            permission={permission.user.it}
+                            relation={relation.access}
                             identityId={identityId}
                         />
                     )
@@ -70,9 +69,8 @@ export default async function UserPage(
                                     query={query}
                                     permission={{
                                         pmEditUser: pmEditUser,
-                                        pmBlockUser: pmBlockUser,
-                                        pmUnblockUser: pmUnblockUser,
                                         pmDeleteUser: pmDeleteUser,
+                                        pmEditUserState: pmEditUserState,
                                         pmDeleteUserSession: pmDeleteUserSession,
                                     }}
                                 />
