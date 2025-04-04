@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkRole, getSession } from '@/lib/action/authentication';
+import { checkPermission, getSession } from '@/lib/action/authentication';
+import { permission, relation } from '@/lib/permission';
 
 export async function middleware(request: NextRequest) {
 
@@ -19,10 +20,8 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url!);
     }
 
-    const allowed = await checkRole(
-        'admin',
-        session!.identity!.id,
-    );
+    const allowed = await checkPermission(permission.stack.dashboard, relation.access, session.identity!.id);
+
 
     if (allowed) {
         if (request.nextUrl.pathname === '/unauthorised') {

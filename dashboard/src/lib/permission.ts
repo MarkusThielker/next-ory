@@ -1,5 +1,6 @@
-const permission = {
+export const permission = {
     stack: {
+        dashboard: 'admin.stack.dashboard',
         status: 'admin.stack.status',
     },
     user: {
@@ -9,7 +10,7 @@ const permission = {
     },
 };
 
-const relation = {
+export const relation = {
     access: 'access',
     edit: 'edit',
     delete: 'delete',

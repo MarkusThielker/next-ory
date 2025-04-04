@@ -1,14 +1,15 @@
 import { StatusCard } from '@/components/status-card';
 import { hydraMetadata, ketoMetadata, kratosMetadata } from '@/lib/action/metadata';
-import { checkPermission, requireRole, requireSession } from '@/lib/action/authentication';
+import { checkPermission, requirePermission, requireSession } from '@/lib/action/authentication';
 import InsufficientPermission from '@/components/insufficient-permission';
+import { permission, relation } from '@/lib/permission';
 
 export default async function RootPage() {
 
     const session = await requireSession();
     const identityId = session.identity!.id;
 
-    await requireRole('admin', identityId);
+    await requirePermission(permission.stack.dashboard, relation.access, identityId);
 
     const pmAccessStackStatus = await checkPermission(permission.stack.status, relation.access, identityId);
 
