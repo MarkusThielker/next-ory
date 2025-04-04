@@ -50,7 +50,7 @@ export function StatusCard({ title, version, name, status, className }: StatusCa
                             </TooltipTrigger>
                             <TooltipContent>
                                 {
-                                    status.errors.map((error) => <span>{error}</span>)
+                                    status.errors.map((error) => <span key={error}>{error}</span>)
                                 }
                             </TooltipContent>
                         </Tooltip>

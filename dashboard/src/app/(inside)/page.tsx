@@ -1,40 +1,20 @@
-import { getHydraMetadataApi, getKetoMetadataApi, getKratosMetadataApi } from '@/ory/sdk/server';
-import { MetadataApiReady, StatusCard } from '@/components/status-card';
+import { StatusCard } from '@/components/status-card';
+import { hydraMetadata, ketoMetadata, kratosMetadata } from '@/lib/action/metadata';
+import { checkPermission, requireRole, requireSession } from '@/lib/action/authentication';
+import InsufficientPermission from '@/components/insufficient-permission';
 
 export default async function RootPage() {
 
-    const kratosMetadataApi = await getKratosMetadataApi();
-    const kratosVersion = await kratosMetadataApi.getVersion()
-        .then(res => res.data.version)
-        .catch(() => undefined);
-    const kratosStatus = await fetch(process.env.ORY_KRATOS_ADMIN_URL + '/health/ready')
-        .then((response) => response.json() as MetadataApiReady)
-        .catch(() => {
-            return { errors: ['No instance running'] } as MetadataApiReady;
-        });
+    const session = await requireSession();
+    const identityId = session.identity!.id;
 
+    await requireRole('admin', identityId);
 
-    const hydraMetadataApi = await getHydraMetadataApi();
-    const hydraVersion = await hydraMetadataApi.getVersion()
-        .then(res => res.data.version)
-        .catch(() => undefined);
-    const hydraStatus = await fetch(process.env.ORY_HYDRA_ADMIN_URL + '/health/ready')
-        .then((response) => response.json() as MetadataApiReady)
-        .catch(() => {
-            return { errors: ['No instance running'] } as MetadataApiReady;
-        });
+    const pmAccessStackStatus = await checkPermission('admin.stack.status', 'access', identityId);
 
-
-    const ketoMetadataApi = await getKetoMetadataApi();
-    const ketoVersion = await ketoMetadataApi.getVersion()
-        .then(res => res.data.version)
-        .catch(() => undefined);
-    const ketoStatus = await fetch(process.env.ORY_KETO_ADMIN_URL + '/health/ready')
-        .then((response) => response.json() as MetadataApiReady)
-        .catch(() => {
-            return { errors: ['No instance running'] } as MetadataApiReady;
-        });
-
+    const kratos = pmAccessStackStatus && await kratosMetadata();
+    const hydra = pmAccessStackStatus && await hydraMetadata();
+    const keto = pmAccessStackStatus && await ketoMetadata();
 
     return (
         <div className="flex flex-col space-y-4">
@@ -43,25 +23,46 @@ export default async function RootPage() {
                 <p className="text-lg font-light">See the list of all applications in your stack</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <StatusCard
-                    title="Ory Kratos"
-                    version={kratosVersion}
-                    name="Kratos"
-                    status={kratosStatus}
-                    className="flex-1"/>
-                <StatusCard
-                    title="Ory Hydra"
-                    version={hydraVersion}
-                    name="Hydra"
-                    status={hydraStatus}
-                    className="flex-1"/>
-                <StatusCard
-                    title="Ory Keto"
-                    version={ketoVersion}
-                    name="Keto"
-                    status={ketoStatus}
-                    className="flex-1"/>
-                <div className="flex-1"/>
+                {
+                    !pmAccessStackStatus && (
+                        <InsufficientPermission
+                            permission="admin.stack.status"
+                            relation="access"
+                            identityId={identityId}
+                            classNames="col-span-1 md:col-span-4"
+                        />
+                    )
+                }
+                {
+                    kratos && (
+                        <StatusCard
+                            title="Ory Kratos"
+                            version={kratos.version}
+                            name="Kratos"
+                            status={kratos.status}
+                            className="flex-1"/>
+                    )
+                }
+                {
+                    hydra && (
+                        <StatusCard
+                            title="Ory Hydra"
+                            version={hydra.version}
+                            name="Hydra"
+                            status={hydra.status}
+                            className="flex-1"/>
+                    )
+                }
+                {
+                    keto && (
+                        <StatusCard
+                            title="Ory Keto"
+                            version={keto.version}
+                            name="Keto"
+                            status={keto.status}
+                            className="flex-1"/>
+                    )
+                }
             </div>
         </div>
     );
