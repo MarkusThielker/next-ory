@@ -143,7 +143,11 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                                     schema</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <IdentityTraits schema={detailIdentitySchema} identity={detailIdentity}/>
+                                <IdentityTraits
+                                    schema={detailIdentitySchema}
+                                    identity={detailIdentity}
+                                    disabled={!pmEditUserTraits}
+                                />
                             </CardContent>
                         </Card>
                         :
