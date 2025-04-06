@@ -172,8 +172,6 @@ export async function listIdentitySessions(id: string) {
 
     console.log('Listed identity\'s sessions', data);
 
-    revalidatePath('/user');
-
     return data;
 }
 
