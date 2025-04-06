@@ -1,5 +1,4 @@
-# this script gives the referenced identity the admin role
-# make sure to provide the id of the identity
+# this script creates a reference from the role to the permission you provide
 
 # check if a identity id argument was provided
 if [ $# -ne 4 ]; then

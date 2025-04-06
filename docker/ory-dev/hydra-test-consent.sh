@@ -1,4 +1,4 @@
-# this script adds a new oath client using the
+# this script adds a new OAuth client using the
 # Ory Hydra CLI and uses the client to start
 # the Ory Hydra test application.
 
