@@ -5,6 +5,7 @@ export const permission = {
     },
     user: {
         it: 'admin.user',
+        address: 'admin.user.address',
         code: 'admin.user.code',
         credential: 'admin.user.credential',
         link: 'admin.user.link',
