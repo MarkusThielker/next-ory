@@ -30,7 +30,6 @@ import { Label } from '@/components/ui/label';
 interface IdentityActionProps {
     identity: Identity,
     permissions: {
-        pmEditUser: boolean;
         pmDeleteUser: boolean;
         pmEditUserState: boolean;
         pmDeleteUserSession: boolean;
