@@ -10,6 +10,7 @@ export const permission = {
         link: 'admin.user.link',
         session: 'admin.user.session',
         state: 'admin.user.state',
+        trait: 'admin.user.trait',
     },
 };
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { getIdentityApi } from '@/ory/sdk/server';
 import { ErrorDisplay } from '@/components/error';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { IdentityTraits } from '@/components/identity/identity-traits';
@@ -14,6 +13,8 @@ import { IdentityCredentials } from '@/components/identity/identity-credentials'
 import { checkPermission, requirePermission, requireSession } from '@/lib/action/authentication';
 import { permission, relation } from '@/lib/permission';
 import { redirect } from 'next/navigation';
+import InsufficientPermission from '@/components/insufficient-permission';
+import { getIdentity, getIdentitySchema, listIdentitySessions } from '@/lib/action/identity';
 
 interface MergedAddress {
     recovery_id?: string;
@@ -91,65 +92,65 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
 
     const pmEditUser = await checkPermission(permission.user.it, relation.edit, identityId);
     const pmDeleteUser = await checkPermission(permission.user.it, relation.delete, identityId);
+    const pmAccessUserTraits = await checkPermission(permission.user.trait, relation.access, identityId);
     const pmEditUserState = await checkPermission(permission.user.state, relation.edit, identityId);
+    const pmAccessUserSession = await checkPermission(permission.user.session, relation.access, identityId);
     const pmDeleteUserSession = await checkPermission(permission.user.session, relation.delete, identityId);
     const pmCreateUserCode = await checkPermission(permission.user.code, relation.create, identityId);
     const pmCreateUserLink = await checkPermission(permission.user.link, relation.create, identityId);
 
     const detailIdentityId = (await params).id;
+    const detailIdentity = pmAccessUser && await getIdentity(detailIdentityId);
 
-    const identityApi = await getIdentityApi();
-    const identity = await identityApi.getIdentity({ id: detailIdentityId })
-        .then((response) => {
-            return response.data;
-        })
-        .catch(() => {
-            console.log('Identity not found');
-        });
-
-    const sessions = await identityApi.listIdentitySessions({ id: detailIdentityId })
-        .then((response) => response.data)
-        .catch(() => {
-            console.log('No sessions found');
-        });
-
-    if (!identity) {
+    if (!detailIdentity) {
         return <ErrorDisplay
             title="Identity not found"
             message={`The requested identity with id ${detailIdentityId} does not exist`}/>;
     }
 
-    if (!identity.verifiable_addresses || !identity.verifiable_addresses[0]) {
+    if (!detailIdentity.verifiable_addresses || !detailIdentity.verifiable_addresses[0]) {
         return <ErrorDisplay
             title="No verifiable adress"
             message="The identity you are trying to see exists but has no identifiable address"/>;
     }
 
-    const identitySchema = await identityApi
-        .getIdentitySchema({ id: identity.schema_id })
-        .then((response) => response.data as KratosSchema);
+
+    const detailIdentitySessions = pmAccessUserSession && await listIdentitySessions(detailIdentityId);
+
+    const detailIdentitySchema = await getIdentitySchema(detailIdentity.schema_id)
+        .then((response) => response as KratosSchema);
 
     const addresses = mergeAddresses(
-        identity.recovery_addresses ?? [],
-        identity.verifiable_addresses ?? [],
+        detailIdentity.recovery_addresses ?? [],
+        detailIdentity.verifiable_addresses ?? [],
     );
 
     return (
         <div className="space-y-4">
             <div>
                 <p className="text-3xl font-bold leading-tight tracking-tight">{addresses[0].value}</p>
-                <p className="text-lg font-light">{identity.id}</p>
+                <p className="text-lg font-light">{detailIdentity.id}</p>
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                <Card className="row-span-3">
-                    <CardHeader>
-                        <CardTitle>Traits</CardTitle>
-                        <CardDescription>All identity properties specified in the identity schema</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <IdentityTraits schema={identitySchema} identity={identity}/>
-                    </CardContent>
-                </Card>
+                {
+                    pmAccessUserTraits ?
+                        <Card className="row-span-3">
+                            <CardHeader>
+                                <CardTitle>Traits</CardTitle>
+                                <CardDescription>All identity properties specified in the identity
+                                    schema</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <IdentityTraits schema={detailIdentitySchema} identity={detailIdentity}/>
+                            </CardContent>
+                        </Card>
+                        :
+                        <InsufficientPermission
+                            permission={permission.user.trait}
+                            relation={relation.access}
+                            identityId={identityId}
+                            classNames="row-span-3"/>
+                }
                 <Card>
                     <CardHeader>
                         <CardTitle>Actions</CardTitle>
@@ -157,7 +158,7 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                     </CardHeader>
                     <CardContent>
                         <IdentityActions
-                            identity={identity}
+                            identity={detailIdentity}
                             permissions={{
                                 pmEditUser,
                                 pmDeleteUser,
@@ -220,7 +221,7 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                         <CardDescription>All authentication mechanisms registered with this identity</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <IdentityCredentials identity={identity}/>
+                        <IdentityCredentials identity={detailIdentity}/>
                     </CardContent>
                 </Card>
                 <Card>
@@ -229,46 +230,48 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                         <CardDescription>See and manage all sessions of this identity</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>OS</TableHead>
-                                    <TableHead>Browser</TableHead>
-                                    <TableHead>Active since</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {
-                                    sessions ?
-                                        sessions.map((session) => {
+                        {
+                            detailIdentitySessions ?
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>OS</TableHead>
+                                            <TableHead>Browser</TableHead>
+                                            <TableHead>Active since</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {
+                                            detailIdentitySessions.map((session) => {
 
-                                            const device = session.devices![0];
-                                            const parser = new UAParser(device.user_agent);
-                                            const result = parser.getResult();
+                                                const device = session.devices![0];
+                                                const parser = new UAParser(device.user_agent);
+                                                const result = parser.getResult();
 
-                                            return (
-                                                <TableRow key={session.id}>
-                                                    <TableCell className="space-x-1">
-                                                        <span>{result.os.name}</span>
-                                                        <span
-                                                            className="text-xs text-neutral-500">{result.os.version}</span>
-                                                    </TableCell>
-                                                    <TableCell className="space-x-1">
-                                                        <span>{result.browser.name}</span>
-                                                        <span
-                                                            className="text-xs text-neutral-500">{result.browser.version}</span>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {new Date(session.authenticated_at!).toLocaleString()}
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })
-                                        :
-                                        <ErrorDisplay title="No sessions" message=""/>
-                                }
-                            </TableBody>
-                        </Table>
+                                                return (
+                                                    <TableRow key={session.id}>
+                                                        <TableCell className="space-x-1">
+                                                            <span>{result.os.name}</span>
+                                                            <span
+                                                                className="text-xs text-neutral-500">{result.os.version}</span>
+                                                        </TableCell>
+                                                        <TableCell className="space-x-1">
+                                                            <span>{result.browser.name}</span>
+                                                            <span
+                                                                className="text-xs text-neutral-500">{result.browser.version}</span>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {new Date(session.authenticated_at!).toLocaleString()}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })
+                                        }
+                                    </TableBody>
+                                </Table>
+                                :
+                                <p>This user has no active sessions</p>
+                        }
                     </CardContent>
                 </Card>
             </div>
