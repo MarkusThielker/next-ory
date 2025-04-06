@@ -286,7 +286,7 @@ export async function unblockIdentity(id: string) {
 export async function deleteIdentity(id: string) {
 
     const session = await requireSession();
-    const allowed = await checkPermission(permission.user.credential, relation.delete, session.identity!.id);
+    const allowed = await checkPermission(permission.user.it, relation.delete, session.identity!.id);
     if (!allowed) {
         throw Error('Unauthorised');
     }
