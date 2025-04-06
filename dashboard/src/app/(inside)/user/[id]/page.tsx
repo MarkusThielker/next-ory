@@ -92,7 +92,10 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
 
     const pmEditUser = await checkPermission(permission.user.it, relation.edit, identityId);
     const pmDeleteUser = await checkPermission(permission.user.it, relation.delete, identityId);
-    const pmAccessUserTraits = await checkPermission(permission.user.trait, relation.access, identityId);
+    const pmAccessUserTrait = await checkPermission(permission.user.trait, relation.access, identityId);
+    const pmEditUserTraits = await checkPermission(permission.user.trait, relation.edit, identityId);
+    const pmAccessUserAddress = await checkPermission(permission.user.address, relation.access, identityId);
+    const pmAccessUserCredential = await checkPermission(permission.user.credential, relation.access, identityId);
     const pmEditUserState = await checkPermission(permission.user.state, relation.edit, identityId);
     const pmAccessUserSession = await checkPermission(permission.user.session, relation.access, identityId);
     const pmDeleteUserSession = await checkPermission(permission.user.session, relation.delete, identityId);
@@ -114,7 +117,6 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
             message="The identity you are trying to see exists but has no identifiable address"/>;
     }
 
-
     const detailIdentitySessions = pmAccessUserSession && await listIdentitySessions(detailIdentityId);
 
     const detailIdentitySchema = await getIdentitySchema(detailIdentity.schema_id)
@@ -133,7 +135,7 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
             </div>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                 {
-                    pmAccessUserTraits ?
+                    pmAccessUserTrait ?
                         <Card className="row-span-3">
                             <CardHeader>
                                 <CardTitle>Traits</CardTitle>
@@ -170,98 +172,44 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                         />
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Addresses</CardTitle>
-                        <CardDescription>All linked addresses for verification and recovery</CardDescription>
-                    </CardHeader>
-                    <CardContent>
+                {
+                    pmAccessUserAddress ?
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Addresses</CardTitle>
+                                <CardDescription>All linked addresses for verification and recovery</CardDescription>
+                            </CardHeader>
+                            <CardContent>
 
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Type</TableHead>
-                                    <TableHead>Value</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {
-                                    addresses.map((address) => {
-                                        return (
-                                            <TableRow key={address.value}>
-                                                <TableCell>{address.value}</TableCell>
-                                                <TableCell>{address.via}</TableCell>
-                                                <TableCell>
-                                                    {address.verifiable_id &&
-                                                        <Badge className="m-1 space-x-1">
-                                                            <span>Verifiable</span>
-                                                            {
-                                                                address.verified ?
-                                                                    <Check className="h-3 w-3"/>
-                                                                    :
-                                                                    <X className="h-3 w-3"/>
-                                                            }
-                                                        </Badge>
-                                                    }
-                                                    {address.recovery_id &&
-                                                        <Badge className="m-1">Recovery</Badge>
-                                                    }
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })
-                                }
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Credentials</CardTitle>
-                        <CardDescription>All authentication mechanisms registered with this identity</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <IdentityCredentials identity={detailIdentity}/>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Sessions</CardTitle>
-                        <CardDescription>See and manage all sessions of this identity</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {
-                            detailIdentitySessions ?
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead>OS</TableHead>
-                                            <TableHead>Browser</TableHead>
-                                            <TableHead>Active since</TableHead>
+                                            <TableHead>Type</TableHead>
+                                            <TableHead>Value</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {
-                                            detailIdentitySessions.map((session) => {
-
-                                                const device = session.devices![0];
-                                                const parser = new UAParser(device.user_agent);
-                                                const result = parser.getResult();
-
+                                            addresses.map((address) => {
                                                 return (
-                                                    <TableRow key={session.id}>
-                                                        <TableCell className="space-x-1">
-                                                            <span>{result.os.name}</span>
-                                                            <span
-                                                                className="text-xs text-neutral-500">{result.os.version}</span>
-                                                        </TableCell>
-                                                        <TableCell className="space-x-1">
-                                                            <span>{result.browser.name}</span>
-                                                            <span
-                                                                className="text-xs text-neutral-500">{result.browser.version}</span>
-                                                        </TableCell>
+                                                    <TableRow key={address.value}>
+                                                        <TableCell>{address.value}</TableCell>
+                                                        <TableCell>{address.via}</TableCell>
                                                         <TableCell>
-                                                            {new Date(session.authenticated_at!).toLocaleString()}
+                                                            {address.verifiable_id &&
+                                                                <Badge className="m-1 space-x-1">
+                                                                    <span>Verifiable</span>
+                                                                    {
+                                                                        address.verified ?
+                                                                            <Check className="h-3 w-3"/>
+                                                                            :
+                                                                            <X className="h-3 w-3"/>
+                                                                    }
+                                                                </Badge>
+                                                            }
+                                                            {address.recovery_id &&
+                                                                <Badge className="m-1">Recovery</Badge>
+                                                            }
                                                         </TableCell>
                                                     </TableRow>
                                                 );
@@ -269,11 +217,90 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                                         }
                                     </TableBody>
                                 </Table>
-                                :
-                                <p>This user has no active sessions</p>
-                        }
-                    </CardContent>
-                </Card>
+                            </CardContent>
+                        </Card>
+                        :
+                        <InsufficientPermission
+                            permission={permission.user.address}
+                            relation={relation.access}
+                            identityId={identityId}/>
+                }
+                {
+                    pmAccessUserCredential ?
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Credentials</CardTitle>
+                                <CardDescription>All authentication mechanisms registered with this
+                                    identity</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <IdentityCredentials identity={detailIdentity}/>
+                            </CardContent>
+                        </Card>
+                        :
+                        <InsufficientPermission
+                            permission={permission.user.credential}
+                            relation={relation.access}
+                            identityId={identityId}/>
+                }
+                {
+                    pmAccessUserSession ?
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Sessions</CardTitle>
+                                <CardDescription>See and manage all sessions of this identity</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {
+                                    detailIdentitySessions ?
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>OS</TableHead>
+                                                    <TableHead>Browser</TableHead>
+                                                    <TableHead>Active since</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {
+                                                    detailIdentitySessions.map((session) => {
+
+                                                        const device = session.devices![0];
+                                                        const parser = new UAParser(device.user_agent);
+                                                        const result = parser.getResult();
+
+                                                        return (
+                                                            <TableRow key={session.id}>
+                                                                <TableCell className="space-x-1">
+                                                                    <span>{result.os.name}</span>
+                                                                    <span
+                                                                        className="text-xs text-neutral-500">{result.os.version}</span>
+                                                                </TableCell>
+                                                                <TableCell className="space-x-1">
+                                                                    <span>{result.browser.name}</span>
+                                                                    <span
+                                                                        className="text-xs text-neutral-500">{result.browser.version}</span>
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {new Date(session.authenticated_at!).toLocaleString()}
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        );
+                                                    })
+                                                }
+                                            </TableBody>
+                                        </Table>
+                                        :
+                                        <p>This user has no active sessions</p>
+                                }
+                            </CardContent>
+                        </Card>
+                        :
+                        <InsufficientPermission
+                            permission={permission.user.session}
+                            relation={relation.access}
+                            identityId={identityId}/>
+                }
             </div>
         </div>
     );
