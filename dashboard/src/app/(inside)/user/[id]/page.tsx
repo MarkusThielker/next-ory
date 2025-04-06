@@ -11,6 +11,9 @@ import { Badge } from '@/components/ui/badge';
 import { Check, X } from 'lucide-react';
 import { IdentityActions } from '@/components/identity/identity-actions';
 import { IdentityCredentials } from '@/components/identity/identity-credentials';
+import { checkPermission, requirePermission, requireSession } from '@/lib/action/authentication';
+import { permission, relation } from '@/lib/permission';
+import { redirect } from 'next/navigation';
 
 interface MergedAddress {
     recovery_id?: string;
@@ -76,19 +79,35 @@ function mergeAddresses(
 
 export default async function UserDetailsPage({ params }: { params: Promise<{ id: string }> }) {
 
-    const identityId = (await params).id;
+    const session = await requireSession();
+    const identityId = session.identity!.id;
+
+    await requirePermission(permission.stack.dashboard, relation.access, identityId);
+
+    const pmAccessUser = await checkPermission(permission.user.it, relation.access, identityId);
+    if (!pmAccessUser) {
+        return redirect('/user');
+    }
+
+    const pmEditUser = await checkPermission(permission.user.it, relation.edit, identityId);
+    const pmDeleteUser = await checkPermission(permission.user.it, relation.delete, identityId);
+    const pmEditUserState = await checkPermission(permission.user.state, relation.edit, identityId);
+    const pmDeleteUserSession = await checkPermission(permission.user.session, relation.delete, identityId);
+    const pmCreateUserCode = await checkPermission(permission.user.code, relation.create, identityId);
+    const pmCreateUserLink = await checkPermission(permission.user.link, relation.create, identityId);
+
+    const detailIdentityId = (await params).id;
 
     const identityApi = await getIdentityApi();
-    const identity = await identityApi.getIdentity({ id: identityId })
+    const identity = await identityApi.getIdentity({ id: detailIdentityId })
         .then((response) => {
-            console.log('identity', response.data);
             return response.data;
         })
         .catch(() => {
             console.log('Identity not found');
         });
 
-    const sessions = await identityApi.listIdentitySessions({ id: identityId })
+    const sessions = await identityApi.listIdentitySessions({ id: detailIdentityId })
         .then((response) => response.data)
         .catch(() => {
             console.log('No sessions found');
@@ -97,7 +116,7 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
     if (!identity) {
         return <ErrorDisplay
             title="Identity not found"
-            message={`The requested identity with id ${identityId} does not exist`}/>;
+            message={`The requested identity with id ${detailIdentityId} does not exist`}/>;
     }
 
     if (!identity.verifiable_addresses || !identity.verifiable_addresses[0]) {
@@ -137,7 +156,17 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                         <CardDescription>Quick actions to manage the identity</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <IdentityActions identity={identity}/>
+                        <IdentityActions
+                            identity={identity}
+                            permissions={{
+                                pmEditUser,
+                                pmDeleteUser,
+                                pmEditUserState,
+                                pmDeleteUserSession,
+                                pmCreateUserCode,
+                                pmCreateUserLink,
+                            }}
+                        />
                     </CardContent>
                 </Card>
                 <Card>

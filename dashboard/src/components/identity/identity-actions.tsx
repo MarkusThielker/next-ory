@@ -28,11 +28,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 interface IdentityActionProps {
-    identity: Identity;
+    identity: Identity,
+    permissions: {
+        pmEditUser: boolean;
+        pmDeleteUser: boolean;
+        pmEditUserState: boolean;
+        pmDeleteUserSession: boolean;
+        pmCreateUserCode: boolean;
+        pmCreateUserLink: boolean;
+    }
 }
 
-export function IdentityActions({ identity }: IdentityActionProps,
+export function IdentityActions({ identity, permissions }: IdentityActionProps,
 ) {
+
+    console.log('IdentityActions', 'Permissions', permissions);
 
     const router = useRouter();
 
@@ -122,7 +132,10 @@ export function IdentityActions({ identity }: IdentityActionProps,
                 dialogDescription="Are you sure you want to create a recovery code for this identity?"
                 dialogButtonSubmit="Create code"
             >
-                <Button className="mr-2" size="icon">
+                <Button
+                    disabled={!permissions.pmCreateUserCode}
+                    className="mr-2"
+                    size="icon">
                     <Key className="h-4"/>
                 </Button>
             </ConfirmationDialogWrapper>
@@ -142,7 +155,10 @@ export function IdentityActions({ identity }: IdentityActionProps,
                 dialogDescription="Are you sure you want to create a recovery link for this identity?"
                 dialogButtonSubmit="Create link"
             >
-                <Button className="mr-2" size="icon">
+                <Button
+                    disabled={!permissions.pmCreateUserLink}
+                    className="mr-2"
+                    size="icon">
                     <Link className="h-4"/>
                 </Button>
             </ConfirmationDialogWrapper>
@@ -160,7 +176,10 @@ export function IdentityActions({ identity }: IdentityActionProps,
                         dialogDescription="Are you sure you want to deactivate this identity? The user will not be able to sign-in or use any active session until re-activation!"
                         dialogButtonSubmit="Deactivate"
                     >
-                        <Button className="mr-2" size="icon">
+                        <Button
+                            disabled={!permissions.pmEditUserState}
+                            className="mr-2"
+                            size="icon">
                             <UserX className="h-4"/>
                         </Button>
                     </ConfirmationDialogWrapper>
@@ -176,7 +195,10 @@ export function IdentityActions({ identity }: IdentityActionProps,
                         dialogDescription="Are you sure you want to activate this identity?"
                         dialogButtonSubmit="Activate"
                     >
-                        <Button className="mr-2" size="icon">
+                        <Button
+                            disabled={!permissions.pmEditUserState}
+                            className="mr-2"
+                            size="icon">
                             <UserCheck className="h-4"/>
                         </Button>
                     </ConfirmationDialogWrapper>
@@ -194,7 +216,10 @@ export function IdentityActions({ identity }: IdentityActionProps,
                 dialogButtonSubmit="Invalidate sessions"
                 dialogButtonSubmitProps={{ variant: 'destructive' }}
             >
-                <Button className="mr-2" size="icon">
+                <Button
+                    disabled={!permissions.pmDeleteUserSession}
+                    className="mr-2"
+                    size="icon">
                     <UserMinus className="h-4"/>
                 </Button>
             </ConfirmationDialogWrapper>
@@ -214,7 +239,10 @@ export function IdentityActions({ identity }: IdentityActionProps,
                 dialogButtonSubmit="Delete identity"
                 dialogButtonSubmitProps={{ variant: 'destructive' }}
             >
-                <Button className="mr-2" size="icon">
+                <Button
+                    disabled={!permissions.pmDeleteUser}
+                    className="mr-2"
+                    size="icon">
                     <Trash className="h-4"/>
                 </Button>
             </ConfirmationDialogWrapper>
