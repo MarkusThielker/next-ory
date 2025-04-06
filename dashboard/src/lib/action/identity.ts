@@ -15,6 +15,34 @@ import { eq, ilike, or, sql } from 'drizzle-orm';
 import { checkPermission, requireSession } from '@/lib/action/authentication';
 import { permission, relation } from '@/lib/permission';
 
+export async function getIdentity(id: string) {
+
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.it, relation.access, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
+
+    const identityApi = await getIdentityApi();
+    const { data } = await identityApi.getIdentity({ id });
+
+    console.log('Got identity', data);
+
+    return data;
+}
+
+
+export async function getIdentitySchema(id: string) {
+
+    const identityApi = await getIdentityApi();
+    const { data } = await identityApi.getIdentitySchema({ id: id });
+
+    console.log('Got identity schema');
+
+    return data;
+}
+
+
 interface QueryIdentitiesProps {
     page: number,
     pageSize: number,
@@ -125,6 +153,24 @@ export async function deleteIdentityCredential({ id, type }: DeleteIdentityCrede
     const { data } = await identityApi.deleteIdentityCredentials({ id, type });
 
     console.log('Credential removed', data);
+
+    revalidatePath('/user');
+
+    return data;
+}
+
+export async function listIdentitySessions(id: string) {
+
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.session, relation.access, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
+
+    const identityApi = await getIdentityApi();
+    const { data } = await identityApi.listIdentitySessions({ id });
+
+    console.log('Listed identity\'s sessions', data);
 
     revalidatePath('/user');
 
