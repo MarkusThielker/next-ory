@@ -15,6 +15,7 @@ interface DynamicFormProps<T extends FieldValues> {
     onValid: SubmitHandler<T>,
     onInvalid: SubmitErrorHandler<T>,
     submitLabel?: string,
+    disabled?: boolean,
 }
 
 export function DynamicForm<T extends FieldValues>(
@@ -25,6 +26,7 @@ export function DynamicForm<T extends FieldValues>(
         onValid,
         onInvalid,
         submitLabel,
+        disabled,
     }: DynamicFormProps<T>,
 ) {
 
@@ -48,7 +50,7 @@ export function DynamicForm<T extends FieldValues>(
                                     key={fullFieldName}
                                     render={({ field }) => (
                                         <FormItem className="flex items-center space-x-2 space-y-0">
-                                            <Checkbox {...field} checked={field.value}/>
+                                            <Checkbox {...field} disabled={disabled} checked={field.value}/>
                                             <FormLabel>{key}</FormLabel>
                                         </FormItem>
                                     )}
@@ -65,7 +67,7 @@ export function DynamicForm<T extends FieldValues>(
                                         <FormItem>
                                             <FormLabel>{value.title}</FormLabel>
                                             <FormControl>
-                                                <Input placeholder={value.title} {...field} />
+                                                <Input placeholder={value.title} {...field} disabled={disabled}/>
                                             </FormControl>
                                             <FormDescription>{value.description}</FormDescription>
                                         </FormItem>
@@ -87,7 +89,7 @@ export function DynamicForm<T extends FieldValues>(
                 <Button
                     key="submit"
                     type="submit"
-                    disabled={!form.formState.isDirty}
+                    disabled={!form.formState.isDirty || disabled}
                 >
                     {submitLabel ?? 'Submit'}
                 </Button>
