@@ -90,7 +90,6 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
         return redirect('/user');
     }
 
-    const pmEditUser = await checkPermission(permission.user.it, relation.edit, identityId);
     const pmDeleteUser = await checkPermission(permission.user.it, relation.delete, identityId);
     const pmAccessUserTrait = await checkPermission(permission.user.trait, relation.access, identityId);
     const pmEditUserTraits = await checkPermission(permission.user.trait, relation.edit, identityId);
@@ -166,7 +165,6 @@ export default async function UserDetailsPage({ params }: { params: Promise<{ id
                         <IdentityActions
                             identity={detailIdentity}
                             permissions={{
-                                pmEditUser,
                                 pmDeleteUser,
                                 pmEditUserState,
                                 pmDeleteUserSession,
