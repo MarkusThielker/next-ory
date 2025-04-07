@@ -48,16 +48,16 @@ export function IdentityTraits({ schema, identity, disabled }: IdentityTraitForm
         delete traits['metadata_public'];
         delete traits['metadata_admin'];
 
-        updateIdentity({
-            id: currentIdentity.id,
-            body: {
+        updateIdentity(
+            currentIdentity.id,
+            {
                 schema_id: currentIdentity.schema_id,
                 state: currentIdentity.state!,
                 traits: traits,
                 metadata_public: data.metadata_public,
                 metadata_admin: data.metadata_admin,
             },
-        })
+        )
             .then((identity) => {
                 setCurrentIdentity(identity);
                 toast.success('Identity updated');
