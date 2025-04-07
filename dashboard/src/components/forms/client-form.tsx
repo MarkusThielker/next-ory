@@ -238,7 +238,7 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                                     </FormDescription>
                                                     <FormControl>
                                                         <Input
-                                                            placeholder="https://myapp.example/logo.png" {...field} />
+                                                            placeholder="https://" {...field} />
                                                     </FormControl>
                                                     <FormMessage/>
                                                 </FormItem>
@@ -259,7 +259,7 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                                     </FormDescription>
                                                     <FormControl>
                                                         <Input
-                                                            placeholder="https://myapp.example/privacy_policy"
+                                                            placeholder="https://"
                                                             {...field}
                                                         />
                                                     </FormControl>
@@ -282,7 +282,7 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                                     </FormDescription>
                                                     <FormControl>
                                                         <Input
-                                                            placeholder="https://myapp.example/terms_of_service" {...field} />
+                                                            placeholder="https://" {...field} />
                                                     </FormControl>
                                                     <FormMessage/>
                                                 </FormItem>
