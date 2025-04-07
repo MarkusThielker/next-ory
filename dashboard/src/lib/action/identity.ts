@@ -42,14 +42,7 @@ export async function getIdentitySchema(id: string) {
     return data;
 }
 
-
-interface QueryIdentitiesProps {
-    page: number,
-    pageSize: number,
-    query?: string,
-}
-
-export async function queryIdentities({ page, pageSize, query }: QueryIdentitiesProps) {
+export async function queryIdentities(page: number, pageSize: number, query?: string) {
 
     const session = await requireSession();
     const allowed = await checkPermission(permission.user.it, relation.access, session.identity!.id);
@@ -109,13 +102,7 @@ export async function queryIdentities({ page, pageSize, query }: QueryIdentities
     };
 }
 
-
-interface UpdatedIdentityProps {
-    id: string;
-    body: UpdateIdentityBody;
-}
-
-export async function updateIdentity({ id, body }: UpdatedIdentityProps) {
+export async function updateIdentity(id: string, body: UpdateIdentityBody) {
 
     const session = await requireSession();
     const allowed = await checkPermission(permission.user.it, relation.edit, session.identity!.id);
@@ -136,12 +123,7 @@ export async function updateIdentity({ id, body }: UpdatedIdentityProps) {
     return data;
 }
 
-interface DeleteIdentityCredentialProps {
-    id: string;
-    type: DeleteIdentityCredentialsTypeEnum;
-}
-
-export async function deleteIdentityCredential({ id, type }: DeleteIdentityCredentialProps) {
+export async function deleteIdentityCredential(id: string, type: DeleteIdentityCredentialsTypeEnum) {
 
     const session = await requireSession();
     const allowed = await checkPermission(permission.user.credential, relation.delete, session.identity!.id);

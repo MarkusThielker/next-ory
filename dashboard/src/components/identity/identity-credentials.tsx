@@ -36,7 +36,7 @@ export function IdentityCredentials({ identity }: IdentityCredentialsProps) {
                                         (
                                             <ConfirmationDialogWrapper
                                                 onSubmit={async () => {
-                                                    deleteIdentityCredential({ id: identity.id, type: key as never })
+                                                    deleteIdentityCredential(identity.id, key as never)
                                                         .then(() => toast.success(`Credential ${key} deleted`))
                                                         .catch(() => toast.error(`Deleting credential ${key} failed`));
                                                 }}

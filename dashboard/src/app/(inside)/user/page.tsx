@@ -34,7 +34,7 @@ export default async function UserPage(
     let pageSize = 50;
     let paginationRange = 11;
 
-    const users = pmAccessUser && await queryIdentities({ page, pageSize, query });
+    const users = pmAccessUser && await queryIdentities(page, pageSize, query);
 
     return (
         <div className="space-y-4">
