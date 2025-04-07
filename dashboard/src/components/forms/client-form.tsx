@@ -208,7 +208,7 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-lg">
                                         <div className="space-y-0.5">
-                                            <FormLabel className="text-base">
+                                            <FormLabel>
                                                 Skip consent
                                             </FormLabel>
                                             <FormDescription>
@@ -425,7 +425,7 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-lg">
                                         <div className="space-y-0.5">
-                                            <FormLabel className="text-base">
+                                            <FormLabel>
                                                 Frontchannel Logout Session Required
                                             </FormLabel>
                                             <FormDescription>
@@ -471,7 +471,7 @@ export function CreateClientForm({ action }: CreateClientFormProps) {
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-lg">
                                         <div className="space-y-0.5">
-                                            <FormLabel className="text-base">
+                                            <FormLabel>
                                                 Backchannel Logout Session Required
                                             </FormLabel>
                                             <FormDescription>
