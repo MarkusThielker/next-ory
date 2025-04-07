@@ -12,14 +12,43 @@ import {
 import { getDB } from '@/db';
 import { identities, identity_recovery_addresses, identity_verifiable_addresses } from '@/db/schema';
 import { eq, ilike, or, sql } from 'drizzle-orm';
+import { checkPermission, requireSession } from '@/lib/action/authentication';
+import { permission, relation } from '@/lib/permission';
 
-interface QueryIdentitiesProps {
-    page: number,
-    pageSize: number,
-    query?: string,
+export async function getIdentity(id: string) {
+
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.it, relation.access, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
+
+    const identityApi = await getIdentityApi();
+    const { data } = await identityApi.getIdentity({ id });
+
+    console.log('Got identity', data);
+
+    return data;
 }
 
-export async function queryIdentities({ page, pageSize, query }: QueryIdentitiesProps) {
+
+export async function getIdentitySchema(id: string) {
+
+    const identityApi = await getIdentityApi();
+    const { data } = await identityApi.getIdentitySchema({ id: id });
+
+    console.log('Got identity schema');
+
+    return data;
+}
+
+export async function queryIdentities(page: number, pageSize: number, query?: string) {
+
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.it, relation.access, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
 
     if (page < 1 || pageSize < 1) {
         return {
@@ -73,13 +102,13 @@ export async function queryIdentities({ page, pageSize, query }: QueryIdentities
     };
 }
 
+export async function updateIdentity(id: string, body: UpdateIdentityBody) {
 
-interface UpdatedIdentityProps {
-    id: string;
-    body: UpdateIdentityBody;
-}
-
-export async function updateIdentity({ id, body }: UpdatedIdentityProps) {
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.it, relation.edit, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
 
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.updateIdentity({
@@ -94,12 +123,13 @@ export async function updateIdentity({ id, body }: UpdatedIdentityProps) {
     return data;
 }
 
-interface DeleteIdentityCredentialProps {
-    id: string;
-    type: DeleteIdentityCredentialsTypeEnum;
-}
+export async function deleteIdentityCredential(id: string, type: DeleteIdentityCredentialsTypeEnum) {
 
-export async function deleteIdentityCredential({ id, type }: DeleteIdentityCredentialProps) {
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.credential, relation.delete, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
 
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.deleteIdentityCredentials({ id, type });
@@ -111,7 +141,29 @@ export async function deleteIdentityCredential({ id, type }: DeleteIdentityCrede
     return data;
 }
 
+export async function listIdentitySessions(id: string) {
+
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.session, relation.access, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
+
+    const identityApi = await getIdentityApi();
+    const { data } = await identityApi.listIdentitySessions({ id });
+
+    console.log('Listed identity\'s sessions', data);
+
+    return data;
+}
+
 export async function deleteIdentitySessions(id: string) {
+
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.session, relation.delete, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
 
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.deleteIdentitySessions({ id });
@@ -124,6 +176,12 @@ export async function deleteIdentitySessions(id: string) {
 }
 
 export async function createRecoveryCode(id: string) {
+
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.code, relation.create, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
 
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.createRecoveryCodeForIdentity({
@@ -139,6 +197,12 @@ export async function createRecoveryCode(id: string) {
 
 export async function createRecoveryLink(id: string) {
 
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.link, relation.create, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
+
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.createRecoveryLinkForIdentity({
         createRecoveryLinkForIdentityBody: {
@@ -152,6 +216,12 @@ export async function createRecoveryLink(id: string) {
 }
 
 export async function blockIdentity(id: string) {
+
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.state, relation.edit, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
 
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.patchIdentity({
@@ -172,6 +242,12 @@ export async function blockIdentity(id: string) {
 
 export async function unblockIdentity(id: string) {
 
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.state, relation.edit, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
+
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.patchIdentity({
         id,
@@ -190,6 +266,12 @@ export async function unblockIdentity(id: string) {
 }
 
 export async function deleteIdentity(id: string) {
+
+    const session = await requireSession();
+    const allowed = await checkPermission(permission.user.it, relation.delete, session.identity!.id);
+    if (!allowed) {
+        throw Error('Unauthorised');
+    }
 
     const identityApi = await getIdentityApi();
     const { data } = await identityApi.deleteIdentity({ id });

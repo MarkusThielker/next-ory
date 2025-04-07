@@ -1,47 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { getFrontendApi, getPermissionApi } from '@/ory/sdk/server';
+import { checkPermission, getSession } from '@/lib/action/authentication';
+import { permission, relation } from '@/lib/permission';
 
 export async function middleware(request: NextRequest) {
 
-    const frontendApi = await getFrontendApi();
-    const cookie = await cookies();
+    // middleware can not work with requireSession, requireRole and
+    // requirePermission due to the different redirect mechanisms in use!
 
-    const session = await frontendApi
-        .toSession({ cookie: 'ory_kratos_session=' + cookie.get('ory_kratos_session')?.value })
-        .then((response) => response.data)
-        .catch(() => null);
-
+    const session = await getSession();
     if (!session) {
 
-        console.log('NO SESSION');
+        console.log('middleware', 'MISSING SESSION');
 
         const url = process.env.NEXT_PUBLIC_AUTHENTICATION_NODE_URL +
             '/flow/login?return_to=' +
             process.env.NEXT_PUBLIC_DASHBOARD_NODE_URL;
 
-        console.log('REDIRECT TO', url);
-
-        return NextResponse.redirect(url);
+        console.log('middleware', 'REDIRECT TO', url);
+        return NextResponse.redirect(url!);
     }
 
-    const permissionApi = await getPermissionApi();
-    const isAdmin = await permissionApi.checkPermission({
-        namespace: 'roles',
-        object: 'admin',
-        relation: 'member',
-        subjectId: session!.identity!.id,
-    })
-        .then(({ data: { allowed } }) => {
-            console.log('is_admin', session!.identity!.id, allowed);
-            return allowed;
-        })
-        .catch((response) => {
-            console.log('is_admin', session!.identity!.id, response, 'check failed');
-            return false;
-        });
+    const allowed = await checkPermission(permission.stack.dashboard, relation.access, session.identity!.id);
 
-    if (isAdmin) {
+
+    if (allowed) {
         if (request.nextUrl.pathname === '/unauthorised') {
             return redirect('/', 'HAS PERMISSION BUT ACCESSING /unauthorized');
         }
@@ -55,9 +37,9 @@ export async function middleware(request: NextRequest) {
 }
 
 function redirect(path: string, reason: string) {
-    console.log(reason);
+    console.log('middleware', reason);
     const url = `${process.env.NEXT_PUBLIC_DASHBOARD_NODE_URL}${path}`;
-    console.log('REDIRECT TO', url);
+    console.log('middleware', 'REDIRECT TO', url);
     return NextResponse.redirect(url!);
 }
 

@@ -16,9 +16,10 @@ import { useState } from 'react';
 interface IdentityTraitFormProps {
     schema: KratosSchema;
     identity: Identity;
+    disabled: boolean;
 }
 
-export function IdentityTraits({ schema, identity }: IdentityTraitFormProps) {
+export function IdentityTraits({ schema, identity, disabled }: IdentityTraitFormProps) {
 
     const [currentIdentity, setCurrentIdentity] = useState(identity);
 
@@ -47,16 +48,16 @@ export function IdentityTraits({ schema, identity }: IdentityTraitFormProps) {
         delete traits['metadata_public'];
         delete traits['metadata_admin'];
 
-        updateIdentity({
-            id: currentIdentity.id,
-            body: {
+        updateIdentity(
+            currentIdentity.id,
+            {
                 schema_id: currentIdentity.schema_id,
                 state: currentIdentity.state!,
                 traits: traits,
                 metadata_public: data.metadata_public,
                 metadata_admin: data.metadata_admin,
             },
-        })
+        )
             .then((identity) => {
                 setCurrentIdentity(identity);
                 toast.success('Identity updated');
@@ -74,10 +75,11 @@ export function IdentityTraits({ schema, identity }: IdentityTraitFormProps) {
     return (
         <DynamicForm
             form={form}
+            disabled={disabled}
             properties={schema.properties.traits.properties}
             onValid={onValid}
             onInvalid={onInvalid}
-            submitLabel="Update Identity"
+            submitLabel={disabled ? 'Insufficient permissions' : 'Update Identity'}
         >
             <FormField
                 {...form.register('metadata_public')}
@@ -86,7 +88,7 @@ export function IdentityTraits({ schema, identity }: IdentityTraitFormProps) {
                     <FormItem>
                         <FormLabel>Public Metadata</FormLabel>
                         <FormControl>
-                            <Textarea placeholder="Public Metadata" {...field} />
+                            <Textarea placeholder="Public Metadata" {...field} disabled={disabled}/>
                         </FormControl>
                         <FormDescription>This has to be valid JSON</FormDescription>
                     </FormItem>
@@ -99,7 +101,7 @@ export function IdentityTraits({ schema, identity }: IdentityTraitFormProps) {
                     <FormItem>
                         <FormLabel>Admin Metadata</FormLabel>
                         <FormControl>
-                            <Textarea placeholder="Admin Metadata" {...field} />
+                            <Textarea placeholder="Admin Metadata" {...field} disabled={disabled}/>
                         </FormControl>
                         <FormDescription>This has to be valid JSON</FormDescription>
                     </FormItem>
