@@ -13,6 +13,9 @@ export const permission = {
         state: 'admin.user.state',
         trait: 'admin.user.trait',
     },
+    client: {
+        it: 'admin.client',
+    },
 };
 
 export const relation = {
