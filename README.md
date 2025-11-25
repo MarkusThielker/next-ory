@@ -3,8 +3,8 @@
 Get started with the Ory stack quickly and easily.
 
 > [!Warning]  
-> This project is work in progress. There is no guarantee that everything will work as it should and breaking changes in
-> the future are possible.
+> This project is currently unmaintained. Feel free to fork it and continue development. <br/>
+> If you do so hit me up and I will link the fork in this README.
 
 The goal of this project is to create an easy-to-use setup to self-host the [Ory](https://www.ory.sh) stack with all its
 components. It will contain an authentication UI, implementing all self-service flows for Ory Kratos and Ory Hydra, as
